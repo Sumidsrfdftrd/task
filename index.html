@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            background: black;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tasks {
+	    display: flex;
+            margin-bottom: 20px;
+	    flex-direction: column;
+            align-items: center;
+        }
+
+        .task {
+            font-size: 20px;
+            color: #00ff00;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-shadow: 0 0 10px #00ff00;
+            width: 90%;
+            text-align: center;
+            max-width: 400px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+
+        .task.completed {
+            color: #666;
+            text-decoration: line-through;
+        }
+.edit-dot {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        width: 25px; /* Adjust size */
+        height: 25px;
+        cursor: pointer;
+    }
+
+    .edit-dot svg {
+        width: 100%;
+        height: 100%;
+        fill: #00ff00;
+        stroke: #00ff00;
+    }
+
+    .edit-dot:hover svg {
+        fill: #ffffff;
+        stroke: #ffffff;
+    }
+        
+        .timer {
+            margin-bottom: 80px;
+            font-size: 20vw; /* Scale font size dynamically to viewport width */
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+	    text-shadow:
+                0 0 10px #00ff00,
+                0 0 20px #00ff00,
+                0 0 40px #00ff00,
+                0 0 80px #00ff00,
+                0 0 100px #00ff00;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        /* Glow Animation */
+        @keyframes glow {
+            0% {
+                text-shadow:
+                    0 0 10px #00ff00,
+                    0 0 20px #00ff00,
+                    0 0 40px #00ff00;
+            }
+            100% {
+                text-shadow:
+                    0 0 20px #00ff00,
+                    0 0 40px #00ff00,
+                    0 0 80px #00ff00;
+            }
+        }
+
+        /* Task Edit Popup */
+        .task-edit-popup {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 200;
+            color: #00ff00;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .task-edit-popup input {
+            padding: 5px;
+            border: 2px solid #00ff00;
+            background: black;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            margin: 5px 0;
+            width: 100%;
+        }
+
+        .task-edit-popup button {
+            padding: 5px 10px;
+            font-family: 'Courier New', monospace;
+	    font-size: 16px;
+            background: #00ff00;
+            color: black;
+            border: none;
+            margin-top: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tasks">
+            <div id="task1" class="task" onclick="toggleTaskCompletion('task1')">
+                Hack the mainframe
+            </div>
+            <div id="task2" class="task" onclick="toggleTaskCompletion('task2')">
+                Intercept data stream
+            </div>
+            <div id="task3" class="task" onclick="toggleTaskCompletion('task3')">
+                Decrypt payload
+            </div>
+            <div id="task4" class="task" onclick="toggleTaskCompletion('task4')">
+                Analyze threat vectors
+            </div>
+            <div id="task5" class="task" onclick="toggleTaskCompletion('task5')">
+                Prepare for zero day
+            </div>
+        </div>
+        <div class="timer" id="timer">00:00:00</div>
+    </div>
+
+    <!-- Edit Button -->
+<div class="edit-dot" onclick="showTaskEditPopup()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"></path>
+        <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+    </svg>
+</div>
+    <!-- Task Edit Popup -->
+    <div class="task-edit-popup" id="taskEditPopup">
+        <h3>Edit Tasks</h3>
+        <input type="text" id="editTask1" placeholder="Task 1">
+        <input type="text" id="editTask2" placeholder="Task 2">
+        <input type="text" id="editTask3" placeholder="Task 3">
+        <input type="text" id="editTask4" placeholder="Task 4">
+        <input type="text" id="editTask5" placeholder="Task 5">
+        <button onclick="saveTasks()">Save</button>
+    </div>
+
+    <script>
+        // Timer function to show the time until next Sunday
+        function getNextSunday() {
+            const now = new Date();
+            const nextSunday = new Date();
+            nextSunday.setDate(now.getDate() + (7 - now.getDay()) % 7);
+            nextSunday.setHours(0, 0, 0, 0);
+            return nextSunday;
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const nextSunday = getNextSunday();
+            const diff = nextSunday - now;
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            document.getElementById("timer").textContent =
+                String(hours).padStart(2, '0') + ":" + 
+                String(minutes).padStart(2, '0') + ":" +
+                String(seconds).padStart(2, '0');
+        }
+
+        // Load tasks from localStorage or set default tasks
+        function loadTasks() {
+            const tasks = [
+                "Hack the mainframe",
+                "Intercept data stream",
+                "Decrypt payload",
+                "Analyze threat vectors",
+                "Prepare for zero day"
+            ];
+
+            for (let i = 0; i < tasks.length; i++) {
+                const taskElement = document.getElementById(`task${i + 1}`);
+                if (taskElement) {
+                    const taskStatus = localStorage.getItem(`task${i + 1}`);
+                    if (taskStatus === 'completed') {
+                        taskElement.classList.add('completed');
+                    } else {
+                        taskElement.classList.remove('completed');
+                    }
+                    taskElement.textContent = localStorage.getItem(`taskText${i + 1}`) || tasks[i];
+                }
+            }
+        }
+
+        // Toggle task completion
+        function toggleTaskCompletion(taskId) {
+            const taskElement = document.getElementById(taskId);
+            taskElement.classList.toggle('completed');
+            
+            // Store completion status and task text in localStorage
+            const taskIndex = taskId.replace('task', '') - 1;
+            localStorage.setItem(`task${taskIndex + 1}`, taskElement.classList.contains('completed') ? 'completed' : 'pending');
+            localStorage.setItem(`taskText${taskIndex + 1}`, taskElement.textContent);
+        }
+
+        // Show task edit popup
+        function showTaskEditPopup() {
+            // Fill the inputs with the current task values
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`editTask${i}`).value = document.getElementById(`task${i}`).textContent;
+            }
+            document.getElementById('taskEditPopup').style.display = 'block';
+        }
+
+        // Save tasks to localStorage
+        function saveTasks() {
+            for (let i = 1; i <= 5; i++) {
+                const taskValue = document.getElementById(`editTask${i}`).value;
+                document.getElementById(`task${i}`).textContent = taskValue;
+                localStorage.setItem(`taskText${i}`, taskValue);
+            }
+            document.getElementById('taskEditPopup').style.display = 'none';
+        }
+
+        // Initialize timer and tasks
+        setInterval(updateTimer, 1000);
+        loadTasks();
+    </script>
+</body>
+</html>
