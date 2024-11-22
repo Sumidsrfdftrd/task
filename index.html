@@ -2,151 +2,298 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Task Manager</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Courier New', monospace;
-            color: #00ff00;
-            background: black;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+        @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
-        .container {
-            text-align: center;
-            width: 100%;
+    * {
+      box-sizing: border-box;
+    }
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Courier New', monospace;
+    color: #00ff00;
+    background: black;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.container {
+    text-align: center;
+    width: 100vw;
+    height: calc(100vh - 25vw); /* Sets the height as 100% of viewport height minus 20% of viewport width */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.inner-container {
+            display: flex;
+            flex: 1;
             height: 100%;
+            width: 100%;
+            align-items: center;
+        }
+        .progress {
+      position: relative;
+      border-radius: 50%;
+      width: min(calc(100vh - 25vw), 50vw);
+      height: min(calc(100vh - 25vw),50vw);
+      border: 5px solid #00ff00;
+      box-shadow: 0 0 20px #00ff00;
+      transition: all 1s ease;
+    }
+
+    .progress .inner {
+      position: absolute;
+      overflow: hidden;
+      z-index: 2;
+      border-radius: 50%;
+      width: min(calc(100vh - 25vw - 10px), 50vw - 10px);
+      height: min(calc(100vh - 25vw - 10px), 50vw - 10px);
+      border: 5px solid #000;
+      transition: all 1s ease;
+    }
+
+    .progress .inner .water {
+      position: absolute;
+      z-index: 1;
+      width: 200%;
+      height: 200%;
+      left: -50%;
+      border-radius: 40%;
+      animation: spin 10s linear infinite;
+      background: #000; /* Default color */
+      transition: all 1s ease;
+    }
+
+    .progress .inner .glare {
+      position: absolute;
+      top: -120%;
+      left: -120%;
+      z-index: 5;
+      width: 200%;
+      height: 200%;
+      transform: rotate(45deg);
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.15); /* Default glare color */
+      transition: all 1s ease;
+    }
+
+    .progress .inner .percent {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      font-weight: bold;
+      text-align: center;
+      line-height: min(calc(100vh - 25vw - 10px), 50vw - 10px);
+      font-size: 80px;
+      z-index: 9999;
+      color: #000;
+      transition: all 1s ease;
+    }
+        .sphere-container {
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
+            margin-top: 20px;
+            border-radius: 20px;  
         }
+.tasks {
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 10px;
+    border-radius: 20px;
+    color: #00ff00;
+}
 
-        .tasks {
-	    display: flex;
-            margin-bottom: 20px;
-	    flex-direction: column;
-            align-items: center;
-        }
+/* Custom scrollbar styles for the tasks container */
+.tasks::-webkit-scrollbar {
+    width: 0px;
+}
+/* Ensure that tasks inside do not grow beyond their container */
+.task {
+    font-size: 30px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px 15px;
+    border-radius: 5px;
+    width: 100%;
+    text-align: center;
+    white-space: nowrap; /* Prevent line wrapping */
+    overflow-x: auto; /* Add horizontal scrolling for overflowing text */
+    text-overflow: clip; /* Prevent ellipsis and show full text */
+    cursor: pointer;
+}
+.task::-webkit-scrollbar {
+    width: 0px;
+}
+.task.completed {
+    color: #666;
+    text-decoration: line-through;
+}
 
-        .task {
-            font-size: 20px;
-            color: #00ff00;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-shadow: 0 0 10px #00ff00;
-            width: 90%;
-            text-align: center;
-            max-width: 400px;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            cursor: pointer;
-        }
+.timer {
+    display: block;
+    position: fixed;
+    bottom: 0px;
+    text-align: center; /* Center the text */
+    font-size: 20vw;
+    font-family: 'Courier New', monospace;
+    color: #00ff00;
+}
 
-        .task.completed {
-            color: #666;
-            text-decoration: line-through;
-        }
+/* Fix edit button to be always visible on the screen */
 .edit-dot {
-        position: absolute;
+    position: fixed; /* Changed to fixed to keep it visible even when scrolling */
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    color: #00ff00;
+    z-index: 100; /* Ensure it stays above other elements */
+}
+
+.edit-dot svg {
+    width: 30px;
+    height: 30px;
+}
+
+/* Popup Styling */
+.task-edit-popup {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 200;
+    color: #00ff00;
+    width: 90%;
+    max-width: 500px;
+}
+
+.task-edit-popup input {
+    padding: 5px;
+    border: 2px solid #00ff00;
+    background: black;
+    font-family: 'Courier New', monospace;
+    color: #00ff00;
+    margin: 5px 0;
+    width: 100%;
+}
+
+.task-edit-popup button {
+    padding: 5px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    background: #00ff00;
+    color: black;
+    border: none;
+    margin-top: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+/* Media query for mobile devices */
+@media screen and (max-width: 768px) {
+    .edit-dot {
+        top: 10px;  /* Adjust position for smaller screens */
         left: 10px;
-        top: 10px;
-        width: 25px; /* Adjust size */
+        width: 25px;  /* Make the button a bit smaller on mobile */
         height: 25px;
-        cursor: pointer;
     }
-
-    .edit-dot svg {
+    .progress {
+        height: min(calc((100vh - 30vw)/2), 100vw);
+        width: min(calc((100vh - 30vw)/2), 100vw);
+    }
+    .progress .inner {
+        height: min(calc((100vh - 30vw)/2 - 10px), 100vw - 10px);
+        width: min(calc((100vh - 30vw)/2 - 10px), 100vw - 10px);
+    }
+    .progress .inner .percent {
+       font-size: 30vw;
+    }
+    .container {
+            height: calc(100vh - 30vw); /* Sets the height as 100% of viewport height minus 20% of viewport width */
+          }
+    .task {
+        font-size: 20px;  /* Adjust font size for smaller screens */
+    }
+    .tasks {
         width: 100%;
+        height: 50%;
+    }
+    .timer {
+        font-size: 20vw;  /* Adjust timer size for smaller screens */
+    }
+    .inner-container {
+                flex-direction: column;
+            }
+
+            .sphere-container {
+                order: -1; /* Moves the sphere above tasks */
+                height: 50%;
+                width: 100%;
+            }
+}
+/* Media query for larger screens: Sphere to the left of tasks */
+        @media screen and (min-width: 769px) {
+            .inner-container {
+                flex-direction: row;
+            }
+         .container {
+            height: calc(100vh - 25vw); /* Sets the height as 100% of viewport height minus 20% of viewport width */
+          }
+.tasks {
+        width: 50%;
         height: 100%;
-        fill: #00ff00;
-        stroke: #00ff00;
+        margin-top: 20px;
     }
-
-    .edit-dot:hover svg {
-        fill: #ffffff;
-        stroke: #ffffff;
+    .progress {
+        height: min(calc(100vh - 25vw), 50vw);
+        width: min(calc(100vh - 25vw), 50vw);
     }
-        
-        .timer {
-            margin-bottom: 80px;
-            font-size: 20vw; /* Scale font size dynamically to viewport width */
-            font-family: 'Courier New', monospace;
-            color: #00ff00;
-	    text-shadow:
-                0 0 10px #00ff00,
-                0 0 20px #00ff00,
-                0 0 40px #00ff00,
-                0 0 80px #00ff00,
-                0 0 100px #00ff00;
-            animation: glow 1.5s infinite alternate;
-        }
-
-        /* Glow Animation */
-        @keyframes glow {
-            0% {
-                text-shadow:
-                    0 0 10px #00ff00,
-                    0 0 20px #00ff00,
-                    0 0 40px #00ff00;
+    .progress .inner {
+        height: min(calc(100vh - 25vw - 10px), 50vw - 10px);
+        width: min(calc(100vh - 25vw - 10px), 50vw - 10px);
+    }
+    .progress .inner .percent {
+       font-size: 10vw;
+    }
+            .sphere-container {
+                height: 100%;
+                width: 50%;
             }
-            100% {
-                text-shadow:
-                    0 0 20px #00ff00,
-                    0 0 40px #00ff00,
-                    0 0 80px #00ff00;
-            }
-        }
-
-        /* Task Edit Popup */
-        .task-edit-popup {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 200;
-            color: #00ff00;
-            width: 90%;
-            max-width: 500px;
-        }
-
-        .task-edit-popup input {
-            padding: 5px;
-            border: 2px solid #00ff00;
-            background: black;
-            font-family: 'Courier New', monospace;
-            color: #00ff00;
-            margin: 5px 0;
-            width: 100%;
-        }
-
-        .task-edit-popup button {
-            padding: 5px 10px;
-            font-family: 'Courier New', monospace;
-	    font-size: 16px;
-            background: #00ff00;
-            color: black;
-            border: none;
-            margin-top: 5px;
-            cursor: pointer;
-            width: 100%;
         }
     </style>
 </head>
 <body>
     <div class="container">
+      <div class="inner-container">
+      <div class="sphere-container">
+        <div class="progress">
+        <div class="inner">
+          <div class="percent"><span></span></div>
+          <div class="water"></div>
+          <div class="glare"></div>
+        </div>
+      </div>
+        </div>
         <div class="tasks">
             <div id="task1" class="task" onclick="toggleTaskCompletion('task1')">
                 Hack the mainframe
@@ -163,6 +310,7 @@
             <div id="task5" class="task" onclick="toggleTaskCompletion('task5')">
                 Prepare for zero day
             </div>
+        </div>
         </div>
         <div class="timer" id="timer">00:00:00</div>
     </div>
@@ -186,6 +334,48 @@
     </div>
 
     <script>
+         const colorInc = Math.floor(100 / 3);
+    let progressValue = 100;  // Initial progress value (you can modify this or use a dynamic value)
+
+    function updateProgress(progressValue) {
+      const percentValue = progressValue;
+
+      document.querySelector(".progress .percent").textContent = `${progressValue}%`;
+      const timer = document.querySelector(".timer");
+      const water = document.querySelector(".progress .water");
+      const progress = document.querySelector(".progress");
+      const glare = document.querySelector(".progress .percent");
+      const tasks = document.querySelector(".tasks");
+      const dot = document.querySelector(".edit-dot");
+      water.style.top = `${100 - percentValue}%`; // Update water level based on progressValue
+
+      // Change water and glare color based on progress value
+      if (progressValue < colorInc * 1) {
+        water.style.background = '#ff0000'; // Red
+        timer.style.color = '#ff0000'; // Red
+        dot.style.color = '#ff0000'; // Red
+        tasks.style.color = '#ff0000'; // Red
+        glare.style.color = '#ff0000'; // Red glow
+        progress.style.border = '5px solid #ff0000'; // Red glow border
+        progress.style.boxShadow = '0 0 20px #ff0000'; // Green glowing shadow
+      } else if (progressValue < colorInc * 2) {
+        water.style.background = '#ff5e00'; // Orange
+        timer.style.color = '#ff5e00'; // Red
+        dot.style.color = '#ff5e00'; // Red
+        tasks.style.color = '#ff5e00'; // Red
+        glare.style.color = '#fff'; // Orange glow
+        progress.style.border = '5px solid #ff5e00'; // Red glow border
+        progress.style.boxShadow = '0 0 20px #ff5e00'; // Green glowing shadow
+      } else {
+        water.style.background = '#00ff00'; // Green
+        timer.style.color = '#00ff00'; // Red
+        dot.style.color = '#00ff00'; // Red
+        tasks.style.color = '#00ff00'; // Red
+        glare.style.color = '#fff'; // Green glow
+        progress.style.border = '5px solid #00ff00'; // Red glow border
+        progress.style.boxShadow = '0 0 20px #00ff00'; // Green glowing shadow
+      }
+    }
         // Timer function to show the time until next Sunday
         function getNextSunday() {
             const now = new Date();
@@ -199,7 +389,9 @@
             const now = new Date();
             const nextSunday = getNextSunday();
             const diff = nextSunday - now;
-            
+            const percentValue = (diff * 100) / 604800000;
+            const progressValue = Math.floor((diff * 100) / 604800000);
+            updateProgress(progressValue);
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
