@@ -373,7 +373,7 @@ body {
         function getNextSunday() {
             const now = new Date();
             const nextSunday = new Date();
-            nextSunday.setDate(now.getDate() + (7 - now.getDay()) % 7);
+            nextSunday.setDate(now.getDate() + 7 - now.getDay());
             nextSunday.setHours(0, 0, 0, 0);
             return nextSunday;
         }
