@@ -5,288 +5,113 @@
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Task Manager</title>
     <style>
-        @keyframes spin {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    * {
-      box-sizing: border-box;
-    }
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Courier New', monospace;
-    color: #00ff00;
-    background: black;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-}
-
-.container {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-}
-
-.inner-container {
+        body {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            background: black;
+            overflow: hidden;
             display: flex;
-            flex: 1;
+            flex-direction: column;
+            justify-content: flex-start;
             align-items: center;
+            height: 100vh;
+            width: 100vw;
         }
-        .progress {
-      position: relative;
-      border-radius: 50%;
-      border: 5px solid #00ff00;
-      box-shadow: 0 0 20px #00ff00;
-      transition: all 1s ease;
-    }
 
-    .progress .inner {
-      position: absolute;
-      overflow: hidden;
-      z-index: 2;
-      border-radius: 50%;
-      border: 5px solid #000;
-      transition: all 1s ease;
-    }
-
-    .progress .inner .water {
-      position: absolute;
-      z-index: 1;
-      width: 200%;
-      height: 200%;
-      left: -50%;
-      border-radius: 40%;
-      animation: spin 10s linear infinite;
-      background: #000; /* Default color */
-      transition: all 1s ease;
-    }
-
-    .progress .inner .glare {
-      position: absolute;
-      top: -120%;
-      left: -120%;
-      z-index: 5;
-      width: 200%;
-      height: 200%;
-      transform: rotate(45deg);
-      border-radius: 50%;
-      background-color: rgba(255, 255, 255, 0.15); /* Default glare color */
-      transition: all 1s ease;
-    }
-
-    .progress .inner .percent {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      font-weight: bold;
-      text-align: center;
-      font-size: 80px;
-      z-index: 9999;
-      color: #000;
-      transition: all 1s ease;
-    }
-        .sphere-container {
+        .container {
+            width: 100%;
+            height: calc(100% - 50px); /* Reserve space for the edit button */
             display: flex;
-            justify-content: center;
-            align-items: center; 
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+            padding: 10px;
         }
-.tasks {
-    overflow-y: auto; /* Enable vertical scrolling */
-    color: #00ff00;
-    background: #000;
-}
 
-/* Custom scrollbar styles for the tasks container */
-.tasks::-webkit-scrollbar {
-    width: 0px;
-}
-/* Ensure that tasks inside do not grow beyond their container */
-.task {
-    width: 100%;
-    height: 20%;
-    background: #000;
-    white-space: nowrap; /* Prevent line wrapping */
-    overflow-x: auto; /* Add horizontal scrolling for overflowing text */
-    text-overflow: clip; /* Prevent ellipsis and show full text */
-    cursor: pointer;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer and Edge */
-}
+        .tasks {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            width: 100%;
+            height: 100%;
+        }
 
-.task::-webkit-scrollbar {
-    display: none;
-    width: 0px; /* WebKit browsers */
-    height: 0px;
-}
+        .task {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 20%; /* Fixed height */
+            background: #000000;
+            color: #00ff00;
+            text-align: center;
+            border: 1px solid #00ff00;
+            overflow: hidden; /* Prevent overflow */
+            white-space: normal; /* Allow wrapping */
+            word-wrap: break-word; /* Ensure words break when necessary */
+        }
 
-/* Optional: Fallback for old browsers */
-.task::-webkit-scrollbar-thumb {
-    display: none; /* Prevent thumb visibility */
-    width: 0px;
-    height: 0px;
-}
-.task.completed {
-    color: #666;
-    text-decoration: line-through;
-}
+        .task.completed {
+            color: #666;
+        }
 
-.timer {
-    display: block;
-    position: fixed;
-    bottom: 0px;
-    text-align: center; /* Center the text */
-    font-size: 20vw;
-    font-family: 'Courier New', monospace;
-    color: #00ff00;
-}
+        .edit-dot {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+            color: #00ff00;
+            z-index: 100;
+        }
 
-/* Fix edit button to be always visible on the screen */
-.edit-dot {
-    position: fixed; /* Changed to fixed to keep it visible even when scrolling */
-    top: 20px;
-    left: 20px;
-    cursor: pointer;
-    color: #00ff00;
-    z-index: 100; /* Ensure it stays above other elements */
-}
+        .edit-dot svg {
+            width: 30px;
+            height: 30px;
+        }
 
-.edit-dot svg {
-    width: 30px;
-    height: 30px;
-}
+        .task-edit-popup {
+            display: none;
+            position: fixed; /* Change from absolute to fixed */
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            z-index: 200;
+        }
 
-/* Popup Styling */
-.task-edit-popup {
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    padding: 20px;
-    border-radius: 10px;
-    z-index: 200;
-    color: #00ff00;
-    width: 90%;
-    max-width: 500px;
-}
+        .task-edit-popup input {
+            text-align: center;
+            font-size: 5vh;
+            border: 2px solid #00ff00;
+            background: black;
+            color: #00ff00;
+            width: 100%;
+            height: 15%;
+        }
 
-.task-edit-popup input {
-    padding: 5px;
-    border: 2px solid #00ff00;
-    background: black;
-    font-family: 'Courier New', monospace;
-    color: #00ff00;
-    margin: 5px 0;
-    width: 100%;
-}
-
-.task-edit-popup button {
-    padding: 5px 10px;
-    font-family: 'Courier New', monospace;
-    font-size: 16px;
-    background: #00ff00;
-    color: black;
-    border: none;
-    margin-top: 5px;
-    cursor: pointer;
-    width: 100%;
-}
-/* Media query for mobile devices */
-@media screen and (max-width: 768px) {
-    .edit-dot {
-        top: 10px;  /* Adjust position for smaller screens */
-        left: 10px;
-        width: 25px;  /* Make the button a bit smaller on mobile */
-        height: 25px;
-    }
-    .progress {
-        height: calc(100vw - 20px);
-        width: calc(100vw - 20px);
-    }
-    .progress .inner {
-        height: calc(100vw - 30px);
-        width: calc(100vw - 30px);
-    }
-    .progress .inner .percent {
-       line-height: calc(100vw - 20px);
-       font-size: 33vw;
-    }
-    .task {
-       font-size: 125%;
-    }
-    .tasks {
-        width: 100vw;
-        height: calc(100vh - 130vw);
-    }
-    .inner-container {
-                flex-direction: column;
-            }
-
-            .sphere-container {
-                order: -1; /* Moves the sphere above tasks */
-                height: 100vw;
-                width: 100vw;
-            }
-}
-/* Media query for larger screens: Sphere to the left of tasks */
-        @media screen and (min-width: 769px) {
-            .inner-container {
-                flex-direction: row;
-            }
-.tasks {
-        width: calc(120vw - 100vh);
-        height: calc(100vh - 20vw);
-        margin-top: 20px;
-    }
-    .progress {
-        height: calc(100vh - 20vw - 30px);
-        width: calc(100vh - 20vw - 30px);
-    }
-    .progress .inner {
-        height: calc(100vh - 20vw - 40px);
-        width: calc(100vh - 20vw - 40px);
-    }
-    .task {
-        font-size: 200%;
-    }
-    .progress .inner .percent {
-       font-size: calc((100vh - 20vw)/3);
-       line-height: calc(100vh - 20vw - 40px);
-    }
-            .sphere-container {
-                height: calc(100vh - 20vw);
-                width: calc(100vh - 20vw);
-            }
+        .task-edit-popup button {
+            font-family: 'Courier New', monospace;
+            font-size: 5vh;
+            background: #00ff00;
+            color: black;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            height: 15%;
         }
     </style>
 </head>
 <body>
     <div class="container">
-      <div class="inner-container">
-      <div class="sphere-container">
-        <div class="progress">
-        <div class="inner">
-          <div class="percent"><span></span></div>
-          <div class="water"></div>
-          <div class="glare"></div>
-        </div>
-      </div>
-        </div>
         <div class="tasks">
             <div id="task1" class="task" onclick="toggleTaskCompletion('task1')">
                 Hack the mainframe
@@ -304,20 +129,16 @@ body {
                 Prepare for zero day
             </div>
         </div>
-        </div>
-        <div class="timer" id="timer">00:00:00</div>
     </div>
 
-    <!-- Edit Button -->
-<div class="edit-dot" onclick="showTaskEditPopup()">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 20h9"></path>
-        <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-    </svg>
-</div>
-    <!-- Task Edit Popup -->
+    <div class="edit-dot" onclick="showTaskEditPopup()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+        </svg>
+    </div>
+
     <div class="task-edit-popup" id="taskEditPopup">
-        <h3>Edit Tasks</h3>
         <input type="text" id="editTask1" placeholder="Task 1">
         <input type="text" id="editTask2" placeholder="Task 2">
         <input type="text" id="editTask3" placeholder="Task 3">
@@ -327,130 +148,230 @@ body {
     </div>
 
     <script>
-         const colorInc = Math.floor(100 / 3);
-    let progressValue = 100;  // Initial progress value (you can modify this or use a dynamic value)
-
-    function updateProgress(progressValue) {
-      const percentValue = progressValue;
-
-      document.querySelector(".progress .percent").textContent = `${progressValue}%`;
-      const timer = document.querySelector(".timer");
-      const water = document.querySelector(".progress .water");
-      const progress = document.querySelector(".progress");
-      const glare = document.querySelector(".progress .percent");
-      const tasks = document.querySelector(".tasks");
-      const dot = document.querySelector(".edit-dot");
-      water.style.top = `${100 - percentValue}%`; // Update water level based on progressValue
-
-      // Change water and glare color based on progress value
-      if (progressValue < colorInc * 1) {
-        water.style.background = '#ff0000'; // Red
-        timer.style.color = '#ff0000'; // Red
-        dot.style.color = '#ff0000'; // Red
-        tasks.style.color = '#ff0000'; // Red
-        glare.style.color = '#ff0000'; // Red glow
-        progress.style.border = '5px solid #ff0000'; // Red glow border
-        progress.style.boxShadow = '0 0 20px #ff0000'; // Green glowing shadow
-      } else if (progressValue < colorInc * 2) {
-        water.style.background = '#ff5e00'; // Orange
-        timer.style.color = '#ff5e00'; // Red
-        dot.style.color = '#ff5e00'; // Red
-        tasks.style.color = '#ff5e00'; // Red
-        glare.style.color = '#fff'; // Orange glow
-        progress.style.border = '5px solid #ff5e00'; // Red glow border
-        progress.style.boxShadow = '0 0 20px #ff5e00'; // Green glowing shadow
-      } else {
-        water.style.background = '#00ff00'; // Green
-        timer.style.color = '#00ff00'; // Red
-        dot.style.color = '#00ff00'; // Red
-        tasks.style.color = '#00ff00'; // Red
-        glare.style.color = '#fff'; // Green glow
-        progress.style.border = '5px solid #00ff00'; // Red glow border
-        progress.style.boxShadow = '0 0 20px #00ff00'; // Green glowing shadow
-      }
+function loadTasks() {
+    const tasks = ["Hack the mainframe", "Intercept data stream", "Decrypt payload", "Analyze threat vectors", "Prepare for zero day"];
+    for (let i = 0; i < tasks.length; i++) {
+        const taskElement = document.getElementById(`task${i + 1}`);
+        if (taskElement) {
+            const taskStatus = localStorage.getItem(`task${i + 1}`);
+            if (taskStatus === 'completed') {
+                taskElement.classList.add('completed');
+            }
+            taskElement.textContent = localStorage.getItem(`taskText${i + 1}`) || tasks[i];
+        }
     }
-        // Timer function to show the time until next Sunday
-        function getNextSunday() {
-            const now = new Date();
-            const nextSunday = new Date();
-            nextSunday.setDate(now.getDate() + 7 - now.getDay());
-            nextSunday.setHours(0, 0, 0, 0);
-            return nextSunday;
+    updateTasks();
+}
+
+function toggleTaskCompletion(taskId) {
+    const taskElement = document.getElementById(taskId);
+    taskElement.classList.toggle('completed');
+    const taskIndex = taskId.replace('task', '') - 1;
+    localStorage.setItem(`task${taskIndex + 1}`, taskElement.classList.contains('completed') ? 'completed' : 'pending');
+    localStorage.setItem(`taskText${taskIndex + 1}`, taskElement.textContent);
+    updatePunishmentState();
+}
+
+function showTaskEditPopup() {
+    for (let i = 1; i <= 5; i++) {
+        document.getElementById(`editTask${i}`).value = document.getElementById(`task${i}`).textContent;
+    }
+    document.getElementById('taskEditPopup').style.display = 'block';
+}
+
+function saveTasks() {
+    editableTask = editableTasks();
+    // Disable or enable edit for tasks based on the day
+    for (let i = 1; i <= 5; i++) {
+        const taskElement = document.getElementById(`task${i}`);
+        if (i === editableTask) {
+            const taskValue = document.getElementById(`editTask${i}`).value;
+            document.getElementById(`task${i}`).textContent = taskValue;
+            localStorage.setItem(`taskText${i}`, taskValue);
+        }
+    }
+    document.getElementById('taskEditPopup').style.display = 'none';
+    updatePunishmentState();
+    adjustFontSize(); // Adjust font size after saving
+}
+
+function updateTasks() {
+    editableTask = editableTasks();
+    // Disable or enable edit for tasks based on the day
+    for (let i = 1; i <= 5; i++) {
+        const taskElement = document.getElementById(`task${i}`);
+        if (i === editableTask) {
+            taskElement.style.pointerEvents = 'auto'; // Disable editing
+        } else {
+            taskElement.style.pointerEvents = 'none'; // Disable editing
+        }
+    }
+    updatePunishmentState();
+    adjustFontSize(); // Adjust font size after saving
+}
+
+function editableTasks() {
+    const dayOfWeek = new Date().getDay();
+    const currentTime = new Date().getHours();
+    let editableTask = null;
+
+    // Determine editable task based on the day and time
+    if (dayOfWeek === 1) {
+       if (currentTime >= 5 && currentTime <= 14 || currentTime >= 16 && currentTime <= 20) {
+        editableTask = 1;
+       } else if (currentTime >= 14 && currentTime <= 16 || currentTime >= 20 && currentTime <= 23) {
+        editableTask = 5;
+       }
+    } else if (dayOfWeek === 2) {
+       if (currentTime >= 5 && currentTime <= 14 || currentTime >= 16 && currentTime <= 20) {
+        editableTask = 2;
+       } else if (currentTime >= 14 && currentTime <= 16 || currentTime >= 20 && currentTime <= 23) {
+        editableTask = 5;
+       }
+    } else if (dayOfWeek === 3) {
+       if (currentTime >= 5 && currentTime <= 14 || currentTime >= 16 && currentTime <= 20) {
+        editableTask = 2;
+       } else if (currentTime >= 14 && currentTime <= 16 || currentTime >= 20 && currentTime <= 23) {
+        editableTask = 5;
+       }
+    } else if (dayOfWeek === 4) {
+       if (currentTime >= 5 && currentTime <= 14 || currentTime >= 16 && currentTime <= 20) {
+        editableTask = 3;
+       } else if (currentTime >= 14 && currentTime <= 16 || currentTime >= 20 && currentTime <= 23) {
+        editableTask = 5;
+       }
+    } else if (dayOfWeek === 5) {
+       if (currentTime >= 5 && currentTime <= 14 || currentTime >= 16 && currentTime <= 20) {
+        editableTask = 3;
+       } else if (currentTime >= 14 && currentTime <= 16 || currentTime >= 20 && currentTime <= 23) {
+        editableTask = 5;
+       }
+    } else if (dayOfWeek === 6) {
+       if (currentTime >= 5 && currentTime <= 14 || currentTime >= 16 && currentTime <= 20) {
+        editableTask = 4;
+       } else if (currentTime >= 14 && currentTime <= 16 || currentTime >= 20 && currentTime <= 23) {
+        editableTask = 5;
+       }
+    } else if (dayOfWeek === 0) {
+       if (currentTime >= 5 && currentTime <= 14 || currentTime >= 16 && currentTime <= 20) {
+        editableTask = 4;
+       } else if (currentTime >= 14 && currentTime <= 16 || currentTime >= 20 && currentTime <= 23) {
+        editableTask = 5;
+       }
+    }
+    return editableTask;
+}
+
+function adjustFontSize() {
+    const tasks = document.querySelectorAll('.task');
+    tasks.forEach(task => {
+        let fontSize = 1; // Start with 1px
+        task.style.fontSize = `${fontSize}px`;
+        task.style.lineHeight = 'normal'; // Allow line breaks
+
+        // Measure if text fits the box
+        while (
+            task.scrollWidth <= task.clientWidth &&
+            task.scrollHeight <= task.clientHeight
+        ) {
+            fontSize++;
+            task.style.fontSize = `${fontSize}px`;
         }
 
-        function updateTimer() {
-            const now = new Date();
-            const nextSunday = getNextSunday();
-            const diff = nextSunday - now;
-            const percentValue = (diff * 100) / 604800000;
-            const progressValue = Math.floor((diff * 100) / 604800000);
-            updateProgress(progressValue);
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            document.getElementById("timer").textContent =
-                String(hours).padStart(2, '0') + ":" + 
-                String(minutes).padStart(2, '0') + ":" +
-                String(seconds).padStart(2, '0');
-        }
+        // Reduce the font size slightly to ensure it fits
+        task.style.fontSize = `${fontSize - 1}px`;
+    });
+}
 
-        // Load tasks from localStorage or set default tasks
-        function loadTasks() {
-            const tasks = [
-                "Hack the mainframe",
-                "Intercept data stream",
-                "Decrypt payload",
-                "Analyze threat vectors",
-                "Prepare for zero day"
-            ];
-
-            for (let i = 0; i < tasks.length; i++) {
-                const taskElement = document.getElementById(`task${i + 1}`);
-                if (taskElement) {
-                    const taskStatus = localStorage.getItem(`task${i + 1}`);
-                    if (taskStatus === 'completed') {
-                        taskElement.classList.add('completed');
-                    } else {
-                        taskElement.classList.remove('completed');
+function updatePunishmentState() {
+    const dayOfWeek = new Date().getDay();
+    const currentTime = new Date().getHours();
+    const editDot = document.querySelector('.edit-dot');
+    for (let i = 1; i <= 5; i++) {
+        const taskElement = document.getElementById(`task${i}`);
+        const taskStatus = localStorage.getItem(`task${i}`);
+        const taskPunishment = localStorage.getItem(`task${i}-punishment`);
+        if (taskElement.style.pointerEvents === 'none') {
+            if (taskStatus !== 'completed') {
+		    if (dayOfWeek !== 1 && i === 1) {
+		          taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+                          localStorage.setItem(`task${i}-punishment`, 'punishment');
+                          localStorage.setItem(`taskText${i}`, 'punishment task');
+		    } else if (dayOfWeek !== 3 && dayOfWeek !== 2 && i === 2) {
+		           taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+                           localStorage.setItem(`task${i}-punishment`, 'punishment'); 
+                           localStorage.setItem(`taskText${i}`, 'punishment task');
+		    } else if (dayOfWeek !== 5 && dayOfWeek !== 4 && i === 3) {
+		           taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+                           localStorage.setItem(`task${i}-punishment`, 'punishment');
+                           localStorage.setItem(`taskText${i}`, 'punishment task');
+		    } else if (dayOfWeek !== 0 && dayOfWeek !== 6 && i === 4) {
+		           taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+                           localStorage.setItem(`task${i}-punishment`, 'punishment');   
+                           localStorage.setItem(`taskText${i}`, 'punishment task');
+		    } else if (dayOfWeek === 0 && currentTime >= 23 && i === 5) {
+		           taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+                           localStorage.setItem(`task${i}-punishment`, 'punishment');   
+                           localStorage.setItem(`taskText${i}`, 'punishment task');
+		    } else if (dayOfWeek === 1 && currentTime < 14 && i === 5) {
+		           taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+                           localStorage.setItem(`task${i}-punishment`, 'punishment');   
+                           localStorage.setItem(`taskText${i}`, 'punishment task');
+		    }
+            }
+        } else {
+            if (taskPunishment === 'punishment') {
+                 taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+                 localStorage.setItem(`task${i}-punishment`, 'punishment');   
+                 localStorage.setItem(`taskText${i}`, 'punishment task');
+                 taskElement.style.border = "1px solid #ff0000";
+                 editDot.style.color = "#ff0000";
+                 if (taskElement.classList.contains('completed')) {
+                      taskElement.style.color = "#333";
+                 } else {
+                      taskElement.style.color = "#ff0000";
+                 }
+                 for (let j = 1; j <= 5; j++) {
+                    if (j !== i) {
+                         const taskElementback = document.getElementById(`task${j}`);
+                         taskElementback.style.border = "2px solid #ff0000";
+                         taskElementback.style.filter = "blur(10px)";
+                         if (taskElementback.classList.contains('completed')) {
+		              taskElementback.style.color = "#333";
+		         } else {
+		              taskElementback.style.color = "#ff0000";
+		         }
                     }
-                    taskElement.textContent = localStorage.getItem(`taskText${i + 1}`) || tasks[i];
-                }
+                 }
+            } else {
+                 taskElement.style.border = "1px solid #00ff00";
+                 editDot.style.color = "#00ff00";
+                 if (taskElement.classList.contains('completed')) {
+                      taskElement.style.color = "#333";
+                 } else {
+                      taskElement.style.color = "#00ff00";
+                 }
+                 for (let j = 1; j <= 5; j++) {
+                    if (j !== i) {
+                         const taskElementback = document.getElementById(`task${j}`);
+                         taskElementback.style.border = "2px solid #00ff00";
+                         if (taskElementback.classList.contains('completed')) {
+		              taskElementback.style.color = "#333";
+		         } else {
+		              taskElementback.style.color = "#00ff00";
+		         }
+                         taskElementback.style.filter = "blur(10px)";
+                    }
+                 }       
             }
         }
+    }
+}
 
-        // Toggle task completion
-        function toggleTaskCompletion(taskId) {
-            const taskElement = document.getElementById(taskId);
-            taskElement.classList.toggle('completed');
-            
-            // Store completion status and task text in localStorage
-            const taskIndex = taskId.replace('task', '') - 1;
-            localStorage.setItem(`task${taskIndex + 1}`, taskElement.classList.contains('completed') ? 'completed' : 'pending');
-            localStorage.setItem(`taskText${taskIndex + 1}`, taskElement.textContent);
-        }
 
-        // Show task edit popup
-        function showTaskEditPopup() {
-            // Fill the inputs with the current task values
-            for (let i = 1; i <= 5; i++) {
-                document.getElementById(`editTask${i}`).value = document.getElementById(`task${i}`).textContent;
-            }
-            document.getElementById('taskEditPopup').style.display = 'block';
-        }
+// Load the tasks and adjust font size on page load
+window.onload = loadTasks;
 
-        // Save tasks to localStorage
-        function saveTasks() {
-            for (let i = 1; i <= 5; i++) {
-                const taskValue = document.getElementById(`editTask${i}`).value;
-                document.getElementById(`task${i}`).textContent = taskValue;
-                localStorage.setItem(`taskText${i}`, taskValue);
-            }
-            document.getElementById('taskEditPopup').style.display = 'none';
-        }
-
-        // Initialize timer and tasks
-        setInterval(updateTimer, 1000);
-        loadTasks();
     </script>
 </body>
 </html>
