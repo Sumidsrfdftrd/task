@@ -13,7 +13,7 @@
 
         body {
             margin: 0;
-            font-family: 'Courier New', monospace;
+            font-family: 'Courier New', Courier, monospace;
             color: #00ff00;
             background: black;
             overflow: hidden;
@@ -84,14 +84,14 @@
             width: 100vw;
             height: 100vh;
             background: rgba(0, 0, 0, 0.8);
-            color: #00ff00;
             z-index: 200;
         }
 
         .task-edit-popup input {
             text-align: center;
+            font-family: 'Courier New', Courier, monospace;
             font-size: 5vh;
-            border: 2px solid #00ff00;
+            border: 1px solid #00ff00;
             background: black;
             color: #00ff00;
             width: 100%;
@@ -99,7 +99,7 @@
         }
 
         .task-edit-popup button {
-            font-family: 'Courier New', monospace;
+            font-family: 'Courier New', Courier, monospace;
             font-size: 5vh;
             background: #00ff00;
             color: black;
@@ -114,19 +114,19 @@
     <div class="container">
         <div class="tasks">
             <div id="task1" class="task" onclick="toggleTaskCompletion('task1')">
-                Hack the mainframe
+                Whiterose: The Mastermind Initiation
             </div>
             <div id="task2" class="task" onclick="toggleTaskCompletion('task2')">
-                Intercept data stream
+                The Whiterose Malware Cartel
             </div>
             <div id="task3" class="task" onclick="toggleTaskCompletion('task3')">
-                Decrypt payload
+                Instant Malware Cashflow
             </div>
             <div id="task4" class="task" onclick="toggleTaskCompletion('task4')">
-                Analyze threat vectors
+                Weekend Malware: Chaos & Destructive Mode
             </div>
             <div id="task5" class="task" onclick="toggleTaskCompletion('task5')">
-                Prepare for zero day
+                Sex: Whiterose's Seductive Lure
             </div>
         </div>
     </div>
@@ -139,54 +139,75 @@
     </div>
 
     <div class="task-edit-popup" id="taskEditPopup">
-        <input type="text" id="editTask1" placeholder="Task 1">
-        <input type="text" id="editTask2" placeholder="Task 2">
-        <input type="text" id="editTask3" placeholder="Task 3">
-        <input type="text" id="editTask4" placeholder="Task 4">
-        <input type="text" id="editTask5" placeholder="Task 5">
+        <input type="text" id="editTask1" placeholder="Whiterose: The Mastermind Initiation">
+        <input type="text" id="editTask2" placeholder="The Whiterose Malware Cartel">
+        <input type="text" id="editTask3" placeholder="Instant Malware Cashflow">
+        <input type="text" id="editTask4" placeholder="Weekend Malware: Chaos & Destructive Mode">
+        <input type="text" id="editTask5" placeholder="Sex: Whiterose's Seductive Lure">
         <button onclick="saveTasks()">Save</button>
     </div>
 
     <script>
 function loadTasks() {
-    const tasks = ["Hack the mainframe", "Intercept data stream", "Decrypt payload", "Analyze threat vectors", "Prepare for zero day"];
-    for (let i = 0; i < tasks.length; i++) {
-        const taskElement = document.getElementById(`task${i + 1}`);
-        if (taskElement) {
-            const taskStatus = localStorage.getItem(`task${i + 1}`);
-            if (taskStatus === 'completed') {
-                taskElement.classList.add('completed');
-            }
-            taskElement.textContent = localStorage.getItem(`taskText${i + 1}`) || tasks[i];
-        }
-    }
-    updateTasks();
+            const tasks = ["Whiterose: The Mastermind Initiation", "The Whiterose Malware Cartel", "Instant Malware Cashflow", "Weekend Malware: Chaos & Destructive Mode", "Sex: Whiterose's Seductive Lure"];
+	    for (let i = 0; i < tasks.length; i++) {
+		const taskElement = document.getElementById(`task${i + 1}`);
+		if (localStorage.getItem(`taskText${i + 1}`) !== null) {
+			    taskElement.textContent = localStorage.getItem(`taskText${i + 1}`);
+	        } else {
+			    taskElement.textContent = tasks[i];
+			    localStorage.setItem(`taskText${i + 1}`, tasks[i]);
+	        }
+		if (localStorage.getItem(`task${i + 1}`) !== null) {
+		    const taskStatus = localStorage.getItem(`task${i + 1}`);
+		    if (taskStatus === 'completed') {
+		        taskElement.classList.add('completed');
+		    } else {
+		        localStorage.setItem(`task${i + 1}`, 'pending');
+		        taskElement.textContent = tasks[i];
+		    }
+		} else {
+		    localStorage.setItem(`task${i + 1}`, 'completed');
+		    taskElement.classList.add('completed');
+		}
+	    }
+            updateTasks();
 }
 
 function toggleTaskCompletion(taskId) {
+    const tasks = ["Whiterose: The Mastermind Initiation", "The Whiterose Malware Cartel", "Instant Malware Cashflow", "Weekend Malware: Chaos & Destructive Mode", "Sex: Whiterose's Seductive Lure"];
     const taskElement = document.getElementById(taskId);
     taskElement.classList.toggle('completed');
     const taskIndex = taskId.replace('task', '') - 1;
     localStorage.setItem(`task${taskIndex + 1}`, taskElement.classList.contains('completed') ? 'completed' : 'pending');
-    localStorage.setItem(`taskText${taskIndex + 1}`, taskElement.textContent);
-    updatePunishmentState();
+    if (taskElement.classList.contains('completed')) { 
+         taskElement.textContent = localStorage.getItem(`taskText${taskIndex + 1}`);
+    } else {
+         taskElement.textContent = tasks[taskIndex]
+    }
+    updateTasks();
 }
 
 function showTaskEditPopup() {
     for (let i = 1; i <= 5; i++) {
-        document.getElementById(`editTask${i}`).value = document.getElementById(`task${i}`).textContent;
+        document.getElementById(`editTask${i}`).value = localStorage.getItem(`taskText${i}`);
     }
     document.getElementById('taskEditPopup').style.display = 'block';
 }
 
 function saveTasks() {
     editableTask = editableTasks();
+    const tasks = ["Whiterose: The Mastermind Initiation", "The Whiterose Malware Cartel", "Instant Malware Cashflow", "Weekend Malware: Chaos & Destructive Mode", "Sex: Whiterose's Seductive Lure"];
     // Disable or enable edit for tasks based on the day
     for (let i = 1; i <= 5; i++) {
         const taskElement = document.getElementById(`task${i}`);
         if (i === editableTask) {
             const taskValue = document.getElementById(`editTask${i}`).value;
-            document.getElementById(`task${i}`).textContent = taskValue;
+            if (taskElement.classList.contains('completed')) {
+                 document.getElementById(`task${i}`).textContent = taskValue;
+            } else {
+                 document.getElementById(`task${i}`).textContent = tasks[i - 1]
+            }
             localStorage.setItem(`taskText${i}`, taskValue);
         }
     }
@@ -294,36 +315,76 @@ function updatePunishmentState() {
         if (taskElement.style.pointerEvents === 'none') {
             if (taskStatus !== 'completed') {
 		    if (dayOfWeek !== 1 && i === 1) {
-		          taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+		          taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
                           localStorage.setItem(`task${i}-punishment`, 'punishment');
-                          localStorage.setItem(`taskText${i}`, 'punishment task');
+                          localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
 		    } else if (dayOfWeek !== 3 && dayOfWeek !== 2 && i === 2) {
-		           taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
                            localStorage.setItem(`task${i}-punishment`, 'punishment'); 
-                           localStorage.setItem(`taskText${i}`, 'punishment task');
+                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
 		    } else if (dayOfWeek !== 5 && dayOfWeek !== 4 && i === 3) {
-		           taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
                            localStorage.setItem(`task${i}-punishment`, 'punishment');
-                           localStorage.setItem(`taskText${i}`, 'punishment task');
+                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
 		    } else if (dayOfWeek !== 0 && dayOfWeek !== 6 && i === 4) {
-		           taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
                            localStorage.setItem(`task${i}-punishment`, 'punishment');   
-                           localStorage.setItem(`taskText${i}`, 'punishment task');
+                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
 		    } else if (dayOfWeek === 0 && currentTime >= 23 && i === 5) {
-		           taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
                            localStorage.setItem(`task${i}-punishment`, 'punishment');   
-                           localStorage.setItem(`taskText${i}`, 'punishment task');
+                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
 		    } else if (dayOfWeek === 1 && currentTime < 14 && i === 5) {
-		           taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
                            localStorage.setItem(`task${i}-punishment`, 'punishment');   
-                           localStorage.setItem(`taskText${i}`, 'punishment task');
+                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
+		    } else if (taskPunishment === 'punishment') {
+		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
+                           localStorage.setItem(`task${i}-punishment`, 'punishment');   
+                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
+		    } else {
+		           localStorage.setItem(`task${i}-punishment`, 'not punishment');   
+		    }
+            } else {
+                    if (dayOfWeek !== 1 && i === 1) {
+                           taskElement.textContent = 'Whiterose: The Mastermind Initiation';
+                           localStorage.setItem(`task${i}-punishment`, 'not punishment');
+                           localStorage.setItem(`taskText${i}`, 'Whiterose: The Mastermind Initiation');
+		    } else if (dayOfWeek !== 3 && dayOfWeek !== 2 && i === 2) {
+		           taskElement.textContent = 'The Whiterose Malware Cartel';
+		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
+		           localStorage.setItem(`taskText${i}`, 'The Whiterose Malware Cartel');
+		    } else if (dayOfWeek !== 5 && dayOfWeek !== 4 && i === 3) {
+		           taskElement.textContent = 'Instant Malware Cashflow';
+		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
+		           localStorage.setItem(`taskText${i}`, 'Instant Malware Cashflow');
+		    } else if (dayOfWeek !== 0 && dayOfWeek !== 6 && i === 4) {
+		           taskElement.textContent = 'Weekend Malware: Chaos & Destructive Mode';
+		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
+		           localStorage.setItem(`taskText${i}`, 'Weekend Malware: Chaos & Destructive Mode');
+		    } else if (dayOfWeek === 0 && currentTime >= 23 && i === 5) {
+		           taskElement.textContent = 'Sex: Whiterose\'s Seductive Lure';
+		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
+		           localStorage.setItem(`taskText${i}`, 'Sex: Whiterose\'s Seductive Lure');
+		    } else if (dayOfWeek === 1 && currentTime < 14 && i === 5) {
+		           taskElement.textContent = 'Sex: Whiterose\'s Seductive Lure';
+		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
+		           localStorage.setItem(`taskText${i}`, 'Sex: Whiterose\'s Seductive Lure');
+		    } else if (taskPunishment === 'punishment') {
+		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
+                           localStorage.setItem(`task${i}-punishment`, 'punishment');   
+                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
+		    } else {
+		           localStorage.setItem(`task${i}-punishment`, 'not punishment');   
 		    }
             }
         } else {
+            const inputs = document.querySelectorAll('.task-edit-popup input');
+            const buttons = document.querySelectorAll('.task-edit-popup button');
             if (taskPunishment === 'punishment') {
-                 taskElement.textContent = 'punishment task'; // Set the task to "task locked" if locked
+                 taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
                  localStorage.setItem(`task${i}-punishment`, 'punishment');   
-                 localStorage.setItem(`taskText${i}`, 'punishment task');
+                 localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
                  taskElement.style.border = "1px solid #ff0000";
                  editDot.style.color = "#ff0000";
                  if (taskElement.classList.contains('completed')) {
@@ -343,7 +404,17 @@ function updatePunishmentState() {
 		         }
                     }
                  }
+                 inputs.forEach(input => {
+		    input.style.border = "1px solid #ff0000";
+		    input.style.color = "#ff0000";
+		 });
+
+		 // Apply styles to all buttons
+		 buttons.forEach(button => {
+		    button.style.background = "#ff0000";
+		 });
             } else {
+                 localStorage.setItem(`task${i}-punishment`, 'not punishment');   
                  taskElement.style.border = "1px solid #00ff00";
                  editDot.style.color = "#00ff00";
                  if (taskElement.classList.contains('completed')) {
@@ -362,7 +433,16 @@ function updatePunishmentState() {
 		         }
                          taskElementback.style.filter = "blur(10px)";
                     }
-                 }       
+                 }  
+                inputs.forEach(input => {
+		    input.style.border = "1px solid #00ff00";
+		    input.style.color = "#00ff00";
+		 });
+
+		 // Apply styles to all buttons
+		 buttons.forEach(button => {
+		    button.style.background = "#00ff00";
+		 });
             }
         }
     }
