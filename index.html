@@ -67,7 +67,7 @@
             top: 20px;
             left: 20px;
             cursor: pointer;
-            color: #00ff00;
+            color: #334D33;
             z-index: 100;
         }
 
@@ -307,6 +307,7 @@ function adjustFontSize() {
 function updatePunishmentState() {
     const dayOfWeek = new Date().getDay();
     const currentTime = new Date().getHours();
+    const totalTime = dayOfWeek * 24 + currentTime;
     const editDot = document.querySelector('.edit-dot');
     for (let i = 1; i <= 5; i++) {
         const taskElement = document.getElementById(`task${i}`);
@@ -314,19 +315,19 @@ function updatePunishmentState() {
         const taskPunishment = localStorage.getItem(`task${i}-punishment`);
         if (taskElement.style.pointerEvents === 'none') {
             if (taskStatus !== 'completed') {
-		    if (dayOfWeek !== 1 && i === 1) {
+		    if ((totalTime < 20 || totalTime >= 44) && i === 1) {
 		          taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
                           localStorage.setItem(`task${i}-punishment`, 'punishment');
                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
-		    } else if (dayOfWeek !== 3 && dayOfWeek !== 2 && i === 2) {
+		    } else if ((totalTime < 44 || totalTime >= 92) && i === 2) {
 		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
                            localStorage.setItem(`task${i}-punishment`, 'punishment'); 
                            localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
-		    } else if (dayOfWeek !== 5 && dayOfWeek !== 4 && i === 3) {
+		    } else if ((totalTime < 92 || totalTime >= 140) && i === 3) {
 		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
                            localStorage.setItem(`task${i}-punishment`, 'punishment');
                            localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
-		    } else if (dayOfWeek !== 0 && dayOfWeek !== 6 && i === 4) {
+		    } else if ((totalTime < 140 || totalTime >= 20) && i === 4) {
 		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
                            localStorage.setItem(`task${i}-punishment`, 'punishment');   
                            localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
@@ -346,19 +347,19 @@ function updatePunishmentState() {
 		           localStorage.setItem(`task${i}-punishment`, 'not punishment');   
 		    }
             } else {
-                    if (dayOfWeek !== 1 && i === 1) {
+                    if ((totalTime < 20 || totalTime >= 44) && i === 1) {
                            taskElement.textContent = 'Whiterose: The Mastermind Initiation';
                            localStorage.setItem(`task${i}-punishment`, 'not punishment');
                            localStorage.setItem(`taskText${i}`, 'Whiterose: The Mastermind Initiation');
-		    } else if (dayOfWeek !== 3 && dayOfWeek !== 2 && i === 2) {
+		    } else if ((totalTime < 44 || totalTime >= 92) && i === 2) {
 		           taskElement.textContent = 'The Whiterose Malware Cartel';
 		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
 		           localStorage.setItem(`taskText${i}`, 'The Whiterose Malware Cartel');
-		    } else if (dayOfWeek !== 5 && dayOfWeek !== 4 && i === 3) {
+		    } else if ((totalTime < 92 || totalTime >= 140) && i === 3) {
 		           taskElement.textContent = 'Instant Malware Cashflow';
 		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
 		           localStorage.setItem(`taskText${i}`, 'Instant Malware Cashflow');
-		    } else if (dayOfWeek !== 0 && dayOfWeek !== 6 && i === 4) {
+		    } else if ((totalTime < 140 || totalTime >= 20) && i === 4) {
 		           taskElement.textContent = 'Weekend Malware: Chaos & Destructive Mode';
 		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
 		           localStorage.setItem(`taskText${i}`, 'Weekend Malware: Chaos & Destructive Mode');
@@ -386,22 +387,66 @@ function updatePunishmentState() {
                  localStorage.setItem(`task${i}-punishment`, 'punishment');   
                  localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
                  taskElement.style.border = "1px solid #ff0000";
-                 editDot.style.color = "#ff0000";
+                 editDot.style.color = "#5A0000";
                  if (taskElement.classList.contains('completed')) {
-                      taskElement.style.color = "#333";
+                      taskElement.style.color = "#5A0000";
                  } else {
                       taskElement.style.color = "#ff0000";
                  }
                  for (let j = 1; j <= 5; j++) {
+                    const taskElementback = document.getElementById(`task${j}`);
                     if (j !== i) {
-                         const taskElementback = document.getElementById(`task${j}`);
-                         taskElementback.style.border = "2px solid #ff0000";
-                         taskElementback.style.filter = "blur(10px)";
-                         if (taskElementback.classList.contains('completed')) {
-		              taskElementback.style.color = "#333";
-		         } else {
-		              taskElementback.style.color = "#ff0000";
-		         }
+                            if ((totalTime >= 140 || totalTime < 20) && j === 1) {
+				           taskElementback.textContent = 'Saturday-Sunday';
+				           taskElementback.style.color = '#5A0000';
+				           taskElementback.style.border = "none";
+			    } else if ((totalTime >= 92 && totalTime < 140) && j === 4) {
+			                   taskElementback.textContent = 'Thursday-Friday';
+				           taskElementback.style.color = '#5A0000';
+				           taskElementback.style.border = "none";
+			    } else if ((totalTime >= 44 && totalTime < 92) && j === 3) {
+			                   taskElementback.textContent = 'Tuesday-Wednesday';
+				           taskElementback.style.color = '#5A0000';
+				           taskElementback.style.border = "none";
+			    } else if ((totalTime >= 20 && totalTime < 44) && j === 2) {
+			                   taskElementback.textContent = 'Monday';
+				           taskElementback.style.color = '#5A0000';
+				           taskElementback.style.border = "none";
+			    } else if ((totalTime >= 140 || totalTime < 20) && j === 4 && i === 5) {
+				           taskElementback.textContent = getText();
+				           taskElementback.style.color = '#5A0000';
+				           taskElementback.style.border = "none";
+				           taskElementback.style.background = "#1A0000";
+				           taskElementback.style.width = getWidth() + '%';
+			    } else if ((totalTime >= 92 && totalTime < 140) && j === 3 && i === 5) {
+			                   taskElementback.textContent = getText();
+				           taskElementback.style.color = '#5A0000';
+				           taskElementback.style.border = "none";
+				           taskElementback.style.background = "#1A0000";
+				           taskElementback.style.width = getWidth() + '%';
+			    } else if ((totalTime >= 44 && totalTime < 92) && j === 2 && i === 5) {
+			                   taskElementback.textContent = getText();
+				           taskElementback.style.color = '#5A0000';
+				           taskElementback.style.border = "none";
+				           taskElementback.style.background = "#1A0000";
+				           taskElementback.style.width = getWidth() + '%';
+			    } else if ((totalTime >= 20 && totalTime < 44) && j === 1 && i === 5) {
+			                   taskElementback.textContent = getText();
+				           taskElementback.style.color = '#5A0000';
+				           taskElementback.style.border = "none";
+				           taskElementback.style.background = "#1A0000";
+				           taskElementback.style.width = getWidth() + '%';
+			    } else if (j === 5) {
+			                   taskElementback.textContent = getText();
+				           taskElementback.style.border = "none";
+				           taskElementback.style.color = "#5A0000";
+				           taskElementback.style.background = "#1A0000";
+				           taskElementback.style.width = getWidth() + '%';
+			    } else {
+                                 taskElementback.style.border = "2px solid #ff0000";
+			         taskElementback.style.color = "#ff0000";
+		                 taskElementback.style.filter = "blur(10px)";
+			    }
                     }
                  }
                  inputs.forEach(input => {
@@ -416,23 +461,68 @@ function updatePunishmentState() {
             } else {
                  localStorage.setItem(`task${i}-punishment`, 'not punishment');   
                  taskElement.style.border = "1px solid #00ff00";
-                 editDot.style.color = "#00ff00";
+                 editDot.style.color = "#334D33";
                  if (taskElement.classList.contains('completed')) {
-                      taskElement.style.color = "#333";
+                      taskElement.style.color = "#334D33";
                  } else {
                       taskElement.style.color = "#00ff00";
                  }
                  for (let j = 1; j <= 5; j++) {
+                    const taskElementback = document.getElementById(`task${j}`);
                     if (j !== i) {
-                         const taskElementback = document.getElementById(`task${j}`);
-                         taskElementback.style.border = "2px solid #00ff00";
-                         if (taskElementback.classList.contains('completed')) {
-		              taskElementback.style.color = "#333";
-		         } else {
-		              taskElementback.style.color = "#00ff00";
-		         }
-                         taskElementback.style.filter = "blur(10px)";
-                    }
+                            if ((totalTime >= 140 || totalTime < 20) && j === 1) {
+				           taskElementback.textContent = 'Saturday-Sunday';
+				           taskElementback.style.color = '#334D33';
+				           taskElementback.style.border = "none";
+			    } else if ((totalTime >= 92 && totalTime < 140) && j === 4) {
+			                   taskElementback.textContent = 'Thursday-Friday';
+				           taskElementback.style.color = '#334D33';
+				           taskElementback.style.border = "none";
+			    } else if ((totalTime >= 44 && totalTime < 92) && j === 3) {
+			                   taskElementback.textContent = 'Tuesday-Wednesday';
+				           taskElementback.style.color = '#334D33';
+				           taskElementback.style.border = "none";
+			    } else if ((totalTime >= 20 && totalTime < 44) && j === 2) {
+			                   taskElementback.textContent = 'Monday';
+				           taskElementback.style.color = '#334D33';
+				           taskElementback.style.border = "none";
+			    } else if ((totalTime >= 140 || totalTime < 20) && j === 4 && i === 5) {
+				           taskElementback.textContent = getText();
+				           taskElementback.style.color = '#334D33';
+				           taskElementback.style.border = "none";
+				           taskElementback.style.background = "#0A1A0A";
+				           taskElementback.style.width = getWidth() + '%';
+			    } else if ((totalTime >= 92 && totalTime < 140) && j === 3 && i === 5) {
+			                   taskElementback.textContent = getText();
+				           taskElementback.style.color = '#334D33';
+				           taskElementback.style.border = "none";
+				           taskElementback.style.background = "#0A1A0A";
+				           taskElementback.style.width = getWidth() + '%';
+			    } else if ((totalTime >= 44 && totalTime < 92) && j === 2 && i === 5) {
+			                   taskElementback.textContent = getText();
+				           taskElementback.style.color = '#334D33';
+				           taskElementback.style.border = "none";
+				           taskElementback.style.background = "#0A1A0A";
+				           taskElementback.style.width = getWidth() + '%';
+			    } else if ((totalTime >= 20 && totalTime < 44) && j === 1 && i === 5) {
+			                   taskElementback.textContent = getText();
+				           taskElementback.style.color = '#334D33';
+				           taskElementback.style.border = "none";
+				           taskElementback.style.background = "#0A1A0A";
+				           taskElementback.style.width = getWidth() + '%';
+			    } else if (j === 5) {
+			                   taskElementback.textContent = getText();
+				           taskElementback.style.border = "none";
+				           taskElementback.style.color = "#334D33";
+				           taskElementback.style.border = "none";
+				           taskElementback.style.background = "#0A1A0A";
+				           taskElementback.style.width = getWidth() + '%';
+			    } else {
+                                 taskElementback.style.border = "2px solid #00ff00";
+			         taskElementback.style.color = "#00ff00";
+		                 taskElementback.style.filter = "blur(10px)";
+			    }
+		      }
                  }  
                 inputs.forEach(input => {
 		    input.style.border = "1px solid #00ff00";
@@ -446,9 +536,148 @@ function updatePunishmentState() {
             }
         }
     }
+    if (currentTime >= 23 || currentTime < 5) { 
+                   editDot.style.color = "#334D33";
+                   for (let j = 1; j <= 5; j++) {
+                            const taskElementdack = document.getElementById(`task${j}`);
+                            if ((totalTime >= 140 || totalTime < 20) && j === 1) {
+				           taskElementdack.textContent = 'Saturday-Sunday';
+				           taskElementdack.style.color = '#334D33';
+				           taskElementdack.style.border = "none";
+			    } else if ((totalTime >= 92 && totalTime < 140) && j === 4) {
+			                   taskElementdack.textContent = 'Thursday-Friday';
+				           taskElementdack.style.color = '#334D33';
+				           taskElementdack.style.border = "none";
+			    } else if ((totalTime >= 44 && totalTime < 92) && j === 3) {
+			                   taskElementdack.textContent = 'Tuesday-Wednesday';
+				           taskElementdack.style.color = '#334D33';
+				           taskElementdack.style.border = "none";
+			    } else if ((totalTime >= 20 && totalTime < 44) && j === 2) {
+			                   taskElementdack.textContent = 'Monday';
+				           taskElementdack.style.color = '#334D33';
+				           taskElementdack.style.border = "none";
+			    } else if ((totalTime >= 140 || totalTime < 20) && j === 4) {
+				           taskElementdack.textContent = getText();
+				           taskElementdack.style.color = '#334D33';
+				           taskElementback.style.border = "none";
+				           taskElementdack.style.background = "#0A1A0A";
+				           taskElementdack.style.width = getWidth() + '%';
+			    } else if ((totalTime >= 92 && totalTime < 140) && j === 3) {
+			                   taskElementdack.textContent = getText();
+				           taskElementdack.style.color = '#334D33';
+				           taskElementback.style.border = "none";
+				           taskElementdack.style.background = "#0A1A0A";
+				           taskElementdack.style.width = getWidth() + '%';
+			    } else if ((totalTime >= 44 && totalTime < 92) && j === 2) {
+			                   taskElementdack.textContent = getText();
+				           taskElementdack.style.color = '#334D33';
+				           taskElementback.style.border = "none";
+				           taskElementdack.style.background = "#0A1A0A";
+				           taskElementdack.style.width = getWidth() + '%';
+			    } else if ((totalTime >= 20 && totalTime < 44) && j === 1) {
+			                   taskElementdack.textContent = getText();
+				           taskElementdack.style.color = '#334D33';
+				           taskElementback.style.border = "none";
+				           taskElementdack.style.background = "#0A1A0A";
+				           taskElementdack.style.width = getWidth() + '%';
+			    } else {
+                                 taskElementdack.style.border = "2px solid #00ff00";
+			         taskElementdack.style.color = "#00ff00";
+		                 taskElementdack.style.filter = "blur(10px)";
+			    }
+		}
+		const inputss = document.querySelectorAll('.task-edit-popup input');
+                const buttonss = document.querySelectorAll('.task-edit-popup button');
+		inputss.forEach(input => {
+		    input.style.border = "1px solid #00ff00";
+		    input.style.color = "#00ff00";
+		 });
+
+		 // Apply styles to all buttons
+		 buttonss.forEach(button => {
+		    button.style.background = "#00ff00";
+		 });
+          }
 }
+function getWidth() {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentDay = now.getDay();
+  const currentMinute = now.getMinutes();
+  const totalTime = currentDay*24 + currentHour;
+  let currentTime = totalTime * 60 + currentMinute;
+  let startTime, endTime;
 
+  if (totalTime >= 140 || totalTime < 20) {
+      endTime = 11280;
+      startTime = 8400;
+      if (currentDay === 0) {
+          currentTime += 10080;
+      }
+  } else if (totalTime >= 20 && totalTime < 44) {
+      endTime = 44 * 60;
+      startTime = 20 * 60;
+  } else if (totalTime >= 44 && totalTime < 92) {
+      endTime = 92 * 60;
+      startTime = 44 * 60;
+  } else if (totalTime >= 92 && totalTime < 140) {
+      endTime = 11280;
+      startTime = 92 * 60;
+  }
+  const remainingTime = endTime - currentTime;
+  const totalDur = endTime - startTime;
+  const percentageRemaining = Math.floor((remainingTime / totalDur) * 100);
+  if (percentageRemaining > 0 && percentageRemaining < 100) {
+         return percentageRemaining;
+  } else {
+         return 100;
+  }
+}
+function getText() {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const currentTimeInMinutes = currentHour * 60 + currentMinute;
 
+  let endTime;
+  let day;
+  const dayOfWeek = new Date().getDay();
+  if (dayOfWeek == 0) {
+      day = "Sunday";
+  } else if (dayOfWeek == 1) {
+      day = "Monday";
+  } else if (dayOfWeek == 2) {
+      day = "Tuesday";
+  } else if (dayOfWeek == 3) {
+      day = "Wednesday";
+  } else if (dayOfWeek == 4) {
+      day = "Thursday";
+  } else if (dayOfWeek == 5) {
+      day = "Friday";
+  } else if (dayOfWeek == 6) {
+      day = "Saturday";
+  }
+  if (currentTimeInMinutes >= 5 * 60 && currentTimeInMinutes < 14 * 60) {
+    // Between 5 AM and 2 PM
+    endTime = "5am-2pm";   // 2 PM
+  } else if (currentTimeInMinutes >= 16 * 60 && currentTimeInMinutes < 20 * 60) {
+    // Between 4 PM and 8 PM
+    endTime = "4pm-8pm";   // 2 PM
+  } else if (currentTimeInMinutes >= 23 * 60 || currentTimeInMinutes < 5 * 60) {
+    // Between 11 PM and 5 AM
+    endTime = "11pm-5am";   // 2 PM
+  } else if (currentTimeInMinutes >= 14 * 60 && currentTimeInMinutes < 16 * 60) {
+    // Between 4 PM and 8 PM
+    endTime = "2pm-4pm";   // 2 PM
+  } else if (currentTimeInMinutes >= 20 * 60 && currentTimeInMinutes < 23 * 60) {
+    // Between 11 PM and 5 AM
+    endTime = "8pm-11pm";   // 2 PM
+  } else {
+    return null;  // Time is outside specified ranges
+  }
+  finalTime = day + '(' + endTime + ')';
+  return finalTime;
+}
 // Load the tasks and adjust font size on page load
 window.onload = loadTasks;
 
