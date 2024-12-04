@@ -148,149 +148,118 @@
     </div>
 
     <script>
-function loadTasks() {
-            const tasks = ["Whiterose: The Mastermind Initiation", "The Whiterose Malware Cartel", "Instant Malware Cashflow", "Weekend Malware: Chaos & Destructive Mode", "Sex: Whiterose's Seductive Lure"];
-	    for (let i = 0; i < tasks.length; i++) {
-		const taskElement = document.getElementById(`task${i + 1}`);
-		if (localStorage.getItem(`taskText${i + 1}`) !== null) {
-			    taskElement.textContent = localStorage.getItem(`taskText${i + 1}`);
-	        } else {
-			    taskElement.textContent = tasks[i];
-			    localStorage.setItem(`taskText${i + 1}`, tasks[i]);
-	        }
-		if (localStorage.getItem(`task${i + 1}`) !== null) {
-		    const taskStatus = localStorage.getItem(`task${i + 1}`);
-		    if (taskStatus === 'completed') {
-		        taskElement.classList.add('completed');
-		    } else {
-		        localStorage.setItem(`task${i + 1}`, 'pending');
-		        taskElement.textContent = tasks[i];
-		    }
-		} else {
-		    localStorage.setItem(`task${i + 1}`, 'completed');
-		    taskElement.classList.add('completed');
-		}
-	    }
-            updateTasks();
-}
-
-function toggleTaskCompletion(taskId) {
-    const tasks = ["Whiterose: The Mastermind Initiation", "The Whiterose Malware Cartel", "Instant Malware Cashflow", "Weekend Malware: Chaos & Destructive Mode", "Sex: Whiterose's Seductive Lure"];
-    const taskElement = document.getElementById(taskId);
-    taskElement.classList.toggle('completed');
-    const taskIndex = taskId.replace('task', '') - 1;
-    localStorage.setItem(`task${taskIndex + 1}`, taskElement.classList.contains('completed') ? 'completed' : 'pending');
-    if (taskElement.classList.contains('completed')) { 
-         taskElement.textContent = localStorage.getItem(`taskText${taskIndex + 1}`);
-    } else {
-         taskElement.textContent = tasks[taskIndex]
+function updatePunishmentState() {
+    const currentTime = new Date().getHours();
+    const totalTime = new Date().getDay() * 24 + currentTime;
+    const editDot = document.querySelector('.edit-dot');
+    const inputs = document.querySelectorAll('.task-edit-popup input');
+    const buttons = document.querySelectorAll('.task-edit-popup button');
+    let dimColorSet = "#334D33";
+    let colorSet = "#00ff00";
+    let backgroundSet = "#0A1A0A";
+    if (localStorage.getItem(`task${editableTasks()}-punishment`) === 'punishment') {
+              dimColorSet = "#5A0000";
+	            colorSet = "#ff0000";
+	            backgroundSet = "#1A0000";
     }
-    updateTasks();
+    editDot.style.color = dimColorSet;
+    inputs.forEach(input => {
+	    input.style.border = `1px solid ${colorSet}`;
+	    input.style.color = colorSet;
+    });
+    buttons.forEach(button => {
+            button.style.background = colorSet;
+    });
+    for (let i = 1; i <= 5; i++) {
+         const taskElement = document.getElementById(`task${i}`);
+         taskElement.style.pointerEvents = 'none';
+         if (i === editableTasks()) {
+            taskElement.style.pointerEvents = 'auto';
+         }
+         let punishmentSet = 'non-punishment';
+         let taskStatus = localStorage.getItem(`task${i}`);
+         let punishment = localStorage.getItem(`task${i}-punishment`)
+         if (i === 1) {
+							contentSet = 'Whiterose: The Mastermind Initiation';
+							daySet = 'Saturday-Sunday';
+					} else if (i === 2) {
+							contentSet = 'The Whiterose Malware Cartel';
+							daySet = 'Monday';
+					} else if (i === 3) {
+							contentSet = 'Instant Malware Cashflow';
+							daySet = 'Tuesday-Wednesday';
+					} else if (i === 4) {
+							contentSet = 'Weekend Malware: Chaos & Destructive Mode';
+							daySet = 'Thursday-Friday';
+					} else if (i === 5) {
+							contentSet = 'Sex: Whiterose\'s Seductive Lure';
+					}
+					let showContent = contentSet;
+          if (taskStatus === null) {
+                   localStorage.setItem(`task${i}`, 'completed');
+                   taskStatus = 'completed';
+          } else if (punishment === 'punishment' || ((((totalTime < 140 || totalTime >= 20) && i === 4) || ((totalTime < 92 || totalTime >= 140) && i === 3) || ((totalTime < 44 || totalTime >= 92) && i === 2) || ((totalTime < 20 || totalTime >= 44) && i === 1)) && taskStatus !== 'completed')) {
+                    contentSet = 'Kernel Crash Operation';
+                    punishmentSet = 'punishment';
+          } else if (((totalTime >= 140 || totalTime < 20) && i === 4) || ((totalTime >= 92 && totalTime < 140) && i === 3) || ((totalTime >= 44 && totalTime < 92) && i === 2) || ((totalTime >= 20 && totalTime < 44) && i === 1) || i === 5) {
+                    contentSet = localStorage.getItem(`taskText${i}`);
+          }
+          localStorage.setItem(`task${i}-punishment`, punishmentSet);
+          localStorage.setItem(`taskText${i}`, contentSet);
+          taskElement.style.color = dimColorSet;
+          taskElement.style.border = "none";
+          if ((((totalTime >= 140 || totalTime < 20) && i === 4) || ((totalTime >= 92 && totalTime < 140) && i === 3) || ((totalTime >= 44 && totalTime < 92) && i === 2) || ((totalTime >= 20 && totalTime < 44) && i === 1) || ((currentTime < 23 && currentTime >= 5) && i === 5)) && taskElement.style.pointerEvents === 'none') {
+						taskElement.textContent = getText();
+						taskElement.style.background = backgroundSet;
+						taskElement.style.width = getWidth() + '%';
+					} else if (((totalTime >= 140 || totalTime < 20) && i === 1) || ((totalTime >= 92 && totalTime < 140) && i === 4) || ((totalTime >= 44 && totalTime < 92) && i === 3) || ((totalTime >= 20 && totalTime < 44) && i === 2)) {
+					 taskElement.textContent = daySet;
+					} else {
+					       taskElement.textContent = contentSet;
+					       taskElement.style.border = `2px solid ${colorSet}`;
+								 if (taskElement.style.pointerEvents === 'none') {
+												  taskElement.style.filter = "blur(10px)";
+												  taskElement.style.color = colorSet;
+					       } else if (taskStatus !== 'completed') {
+					                taskElement.style.color = colorSet;
+					                taskElement.textContent = showContent;
+					       }
+					}           
+    }
+    adjustFontSize();
 }
-
+function toggleTaskCompletion(taskId) {
+    const taskIndex = taskId.replace('task', '') - 1;
+    const taskStatus = localStorage.getItem(`task${taskIndex + 1}`);
+    localStorage.setItem(`task${taskIndex + 1}`, (taskStatus !== 'completed') ? 'completed' : 'pending');
+    updatePunishmentState();
+}
 function showTaskEditPopup() {
     for (let i = 1; i <= 5; i++) {
         document.getElementById(`editTask${i}`).value = localStorage.getItem(`taskText${i}`);
     }
     document.getElementById('taskEditPopup').style.display = 'block';
 }
-
 function saveTasks() {
-    editableTask = editableTasks();
-    const tasks = ["Whiterose: The Mastermind Initiation", "The Whiterose Malware Cartel", "Instant Malware Cashflow", "Weekend Malware: Chaos & Destructive Mode", "Sex: Whiterose's Seductive Lure"];
-    // Disable or enable edit for tasks based on the day
-    for (let i = 1; i <= 5; i++) {
-        const taskElement = document.getElementById(`task${i}`);
-        if (i === editableTask) {
-            const taskValue = document.getElementById(`editTask${i}`).value;
-            if (taskElement.classList.contains('completed')) {
-                 document.getElementById(`task${i}`).textContent = taskValue;
-            } else {
-                 document.getElementById(`task${i}`).textContent = tasks[i - 1]
-            }
-            localStorage.setItem(`taskText${i}`, taskValue);
-        }
+  if (editableTasks() !== 0) {
+	  const taskValue = document.getElementById(`editTask${editableTasks()}`).value;
+    if (localStorage.getItem(`task${editableTasks()}-punishment`) !== 'punishment' && taskValue !== localStorage.getItem(`taskText${editableTasks()}`)) {
+           localStorage.setItem(`taskText${editableTasks()}`, taskValue);
+           updatePunishmentState();
     }
-    document.getElementById('taskEditPopup').style.display = 'none';
-    updatePunishmentState();
-    adjustFontSize(); // Adjust font size after saving
+  }
+  document.getElementById('taskEditPopup').style.display = 'none';
 }
-
-function updateTasks() {
-    editableTask = editableTasks();
-    // Disable or enable edit for tasks based on the day
-    for (let i = 1; i <= 5; i++) {
-        const taskElement = document.getElementById(`task${i}`);
-        if (i === editableTask) {
-            taskElement.style.pointerEvents = 'auto'; // Disable editing
-        } else {
-            taskElement.style.pointerEvents = 'none'; // Disable editing
-        }
-    }
-    updatePunishmentState();
-    adjustFontSize(); // Adjust font size after saving
-}
-
 function editableTasks() {
-    const dayOfWeek = new Date().getDay();
-    const currentTime = new Date().getHours();
-    let editableTask = null;
-
-    // Determine editable task based on the day and time
-    if (dayOfWeek === 1) {
-       if (currentTime >= 5 && currentTime < 14 || currentTime >= 16 && currentTime < 20) {
-        editableTask = 1;
-       } else if (currentTime >= 14 && currentTime < 16 || currentTime >= 20 && currentTime < 23) {
-        editableTask = 5;
-       }
-    } else if (dayOfWeek === 2) {
-       if (currentTime >= 5 && currentTime < 14 || currentTime >= 16 && currentTime < 20) {
-        editableTask = 2;
-       } else if (currentTime >= 14 && currentTime < 16 || currentTime >= 20 && currentTime < 23) {
-        editableTask = 5;
-       }
-    } else if (dayOfWeek === 3) {
-       if (currentTime >= 5 && currentTime < 14 || currentTime >= 16 && currentTime < 20) {
-        editableTask = 2;
-       } else if (currentTime >= 14 && currentTime < 16 || currentTime >= 20 && currentTime < 23) {
-        editableTask = 5;
-       }
-    } else if (dayOfWeek === 4) {
-       if (currentTime >= 5 && currentTime < 14 || currentTime >= 16 && currentTime < 20) {
-        editableTask = 3;
-       } else if (currentTime >= 14 && currentTime < 16 || currentTime >= 20 && currentTime < 23) {
-        editableTask = 5;
-       }
-    } else if (dayOfWeek === 5) {
-       if (currentTime >= 5 && currentTime < 14 || currentTime >= 16 && currentTime < 20) {
-        editableTask = 3;
-       } else if (currentTime >= 14 && currentTime < 16 || currentTime >= 20 && currentTime < 23) {
-        editableTask = 5;
-       }
-    } else if (dayOfWeek === 6) {
-       if (currentTime >= 5 && currentTime < 14 || currentTime >= 16 && currentTime < 20) {
-        editableTask = 4;
-       } else if (currentTime >= 14 && currentTime < 16 || currentTime >= 20 && currentTime < 23) {
-        editableTask = 5;
-       }
-    } else if (dayOfWeek === 0) {
-       if (currentTime >= 5 && currentTime < 14 || currentTime >= 16 && currentTime < 20) {
-        editableTask = 4;
-       } else if (currentTime >= 14 && currentTime < 16 || currentTime >= 20 && currentTime < 23) {
-        editableTask = 5;
-       }
-    }
-    return editableTask;
+  const now = new Date();
+  return (now.getHours() >= 14 && now.getHours() < 16) || (now.getHours() >= 20 && now.getHours() < 23) ? 5 : (now.getHours() >= 23 || now.getHours() < 5) ? 0 : (now.getDay() === 0 || now.getDay() === 6) ? 4 : (now.getDay() === 1) ? 1 : (now.getDay() === 2 || now.getDay() === 3) ? 2 : (now.getDay() === 4 || now.getDay() === 5) ? 3 : 0;
 }
-
 function adjustFontSize() {
     const tasks = document.querySelectorAll('.task');
     tasks.forEach(task => {
-        let fontSize = 1; // Start with 1px
+        let fontSize = 1;
         task.style.fontSize = `${fontSize}px`;
-        task.style.lineHeight = 'normal'; // Allow line breaks
-
-        // Measure if text fits the box
+        task.style.lineHeight = 'normal';
         while (
             task.scrollWidth <= task.clientWidth &&
             task.scrollHeight <= task.clientHeight
@@ -298,389 +267,32 @@ function adjustFontSize() {
             fontSize++;
             task.style.fontSize = `${fontSize}px`;
         }
-
-        // Reduce the font size slightly to ensure it fits
         task.style.fontSize = `${fontSize - 1}px`;
     });
 }
-
-function updatePunishmentState() {
-    const dayOfWeek = new Date().getDay();
-    const currentTime = new Date().getHours();
-    const totalTime = dayOfWeek * 24 + currentTime;
-    const editDot = document.querySelector('.edit-dot');
-    for (let i = 1; i <= 5; i++) {
-        const taskElement = document.getElementById(`task${i}`);
-        const taskStatus = localStorage.getItem(`task${i}`);
-        const taskPunishment = localStorage.getItem(`task${i}-punishment`);
-        if (taskElement.style.pointerEvents === 'none') {
-            if (taskStatus !== 'completed') {
-		    if ((totalTime < 20 || totalTime >= 44) && i === 1) {
-		          taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
-                          localStorage.setItem(`task${i}-punishment`, 'punishment');
-                          localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
-		    } else if ((totalTime < 44 || totalTime >= 92) && i === 2) {
-		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
-                           localStorage.setItem(`task${i}-punishment`, 'punishment'); 
-                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
-		    } else if ((totalTime < 92 || totalTime >= 140) && i === 3) {
-		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
-                           localStorage.setItem(`task${i}-punishment`, 'punishment');
-                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
-		    } else if ((totalTime < 140 || totalTime >= 20) && i === 4) {
-		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
-                           localStorage.setItem(`task${i}-punishment`, 'punishment');   
-                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
-		    } else if (dayOfWeek === 0 && currentTime >= 23 && i === 5) {
-		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
-                           localStorage.setItem(`task${i}-punishment`, 'punishment');   
-                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
-		    } else if (dayOfWeek === 1 && currentTime < 14 && i === 5) {
-		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
-                           localStorage.setItem(`task${i}-punishment`, 'punishment');   
-                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
-		    } else if (taskPunishment === 'punishment') {
-		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
-                           localStorage.setItem(`task${i}-punishment`, 'punishment');   
-                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
-		    } else {
-		           localStorage.setItem(`task${i}-punishment`, 'not punishment');   
-		    }
-            } else {
-                    if ((totalTime < 20 || totalTime >= 44) && i === 1) {
-                           taskElement.textContent = 'Whiterose: The Mastermind Initiation';
-                           localStorage.setItem(`task${i}-punishment`, 'not punishment');
-                           localStorage.setItem(`taskText${i}`, 'Whiterose: The Mastermind Initiation');
-		    } else if ((totalTime < 44 || totalTime >= 92) && i === 2) {
-		           taskElement.textContent = 'The Whiterose Malware Cartel';
-		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
-		           localStorage.setItem(`taskText${i}`, 'The Whiterose Malware Cartel');
-		    } else if ((totalTime < 92 || totalTime >= 140) && i === 3) {
-		           taskElement.textContent = 'Instant Malware Cashflow';
-		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
-		           localStorage.setItem(`taskText${i}`, 'Instant Malware Cashflow');
-		    } else if ((totalTime < 140 || totalTime >= 20) && i === 4) {
-		           taskElement.textContent = 'Weekend Malware: Chaos & Destructive Mode';
-		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
-		           localStorage.setItem(`taskText${i}`, 'Weekend Malware: Chaos & Destructive Mode');
-		    } else if (dayOfWeek === 0 && currentTime >= 23 && i === 5) {
-		           taskElement.textContent = 'Sex: Whiterose\'s Seductive Lure';
-		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
-		           localStorage.setItem(`taskText${i}`, 'Sex: Whiterose\'s Seductive Lure');
-		    } else if (dayOfWeek === 1 && currentTime < 14 && i === 5) {
-		           taskElement.textContent = 'Sex: Whiterose\'s Seductive Lure';
-		           localStorage.setItem(`task${i}-punishment`, 'not punishment');
-		           localStorage.setItem(`taskText${i}`, 'Sex: Whiterose\'s Seductive Lure');
-		    } else if (taskPunishment === 'punishment') {
-		           taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
-                           localStorage.setItem(`task${i}-punishment`, 'punishment');   
-                           localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
-		    } else {
-		           localStorage.setItem(`task${i}-punishment`, 'not punishment');   
-		    }
-            }
-        } else {
-            const inputs = document.querySelectorAll('.task-edit-popup input');
-            const buttons = document.querySelectorAll('.task-edit-popup button');
-            if (taskPunishment === 'punishment') {
-                 taskElement.textContent = 'Kernel Crash Operation'; // Set the task to "task locked" if locked
-                 localStorage.setItem(`task${i}-punishment`, 'punishment');   
-                 localStorage.setItem(`taskText${i}`, 'Kernel Crash Operation');
-                 taskElement.style.border = "1px solid #ff0000";
-                 editDot.style.color = "#5A0000";
-                 if (taskElement.classList.contains('completed')) {
-                      taskElement.style.color = "#5A0000";
-                 } else {
-                      taskElement.style.color = "#ff0000";
-                 }
-                 for (let j = 1; j <= 5; j++) {
-                    const taskElementback = document.getElementById(`task${j}`);
-                    if (j !== i) {
-                            if ((totalTime >= 140 || totalTime < 20) && j === 1) {
-				           taskElementback.textContent = 'Saturday-Sunday';
-				           taskElementback.style.color = '#5A0000';
-				           taskElementback.style.border = "none";
-			    } else if ((totalTime >= 92 && totalTime < 140) && j === 4) {
-			                   taskElementback.textContent = 'Thursday-Friday';
-				           taskElementback.style.color = '#5A0000';
-				           taskElementback.style.border = "none";
-			    } else if ((totalTime >= 44 && totalTime < 92) && j === 3) {
-			                   taskElementback.textContent = 'Tuesday-Wednesday';
-				           taskElementback.style.color = '#5A0000';
-				           taskElementback.style.border = "none";
-			    } else if ((totalTime >= 20 && totalTime < 44) && j === 2) {
-			                   taskElementback.textContent = 'Monday';
-				           taskElementback.style.color = '#5A0000';
-				           taskElementback.style.border = "none";
-			    } else if ((totalTime >= 140 || totalTime < 20) && j === 4 && i === 5) {
-				           taskElementback.textContent = getText();
-				           taskElementback.style.color = '#5A0000';
-				           taskElementback.style.border = "none";
-				           taskElementback.style.background = "#1A0000";
-				           taskElementback.style.width = getWidth() + '%';
-			    } else if ((totalTime >= 92 && totalTime < 140) && j === 3 && i === 5) {
-			                   taskElementback.textContent = getText();
-				           taskElementback.style.color = '#5A0000';
-				           taskElementback.style.border = "none";
-				           taskElementback.style.background = "#1A0000";
-				           taskElementback.style.width = getWidth() + '%';
-			    } else if ((totalTime >= 44 && totalTime < 92) && j === 2 && i === 5) {
-			                   taskElementback.textContent = getText();
-				           taskElementback.style.color = '#5A0000';
-				           taskElementback.style.border = "none";
-				           taskElementback.style.background = "#1A0000";
-				           taskElementback.style.width = getWidth() + '%';
-			    } else if ((totalTime >= 20 && totalTime < 44) && j === 1 && i === 5) {
-			                   taskElementback.textContent = getText();
-				           taskElementback.style.color = '#5A0000';
-				           taskElementback.style.border = "none";
-				           taskElementback.style.background = "#1A0000";
-				           taskElementback.style.width = getWidth() + '%';
-			    } else if (j === 5) {
-			                   taskElementback.textContent = getText();
-				           taskElementback.style.border = "none";
-				           taskElementback.style.color = "#5A0000";
-				           taskElementback.style.background = "#1A0000";
-				           taskElementback.style.width = getWidth() + '%';
-			    } else {
-                                 taskElementback.style.border = "2px solid #ff0000";
-			         taskElementback.style.color = "#ff0000";
-		                 taskElementback.style.filter = "blur(10px)";
-			    }
-                    }
-                 }
-                 inputs.forEach(input => {
-		    input.style.border = "1px solid #ff0000";
-		    input.style.color = "#ff0000";
-		 });
-
-		 // Apply styles to all buttons
-		 buttons.forEach(button => {
-		    button.style.background = "#ff0000";
-		 });
-            } else {
-                 localStorage.setItem(`task${i}-punishment`, 'not punishment');   
-                 taskElement.style.border = "1px solid #00ff00";
-                 editDot.style.color = "#334D33";
-                 if (taskElement.classList.contains('completed')) {
-                      taskElement.style.color = "#334D33";
-                 } else {
-                      taskElement.style.color = "#00ff00";
-                 }
-                 for (let j = 1; j <= 5; j++) {
-                    const taskElementback = document.getElementById(`task${j}`);
-                    if (j !== i) {
-                            if ((totalTime >= 140 || totalTime < 20) && j === 1) {
-				           taskElementback.textContent = 'Saturday-Sunday';
-				           taskElementback.style.color = '#334D33';
-				           taskElementback.style.border = "none";
-			    } else if ((totalTime >= 92 && totalTime < 140) && j === 4) {
-			                   taskElementback.textContent = 'Thursday-Friday';
-				           taskElementback.style.color = '#334D33';
-				           taskElementback.style.border = "none";
-			    } else if ((totalTime >= 44 && totalTime < 92) && j === 3) {
-			                   taskElementback.textContent = 'Tuesday-Wednesday';
-				           taskElementback.style.color = '#334D33';
-				           taskElementback.style.border = "none";
-			    } else if ((totalTime >= 20 && totalTime < 44) && j === 2) {
-			                   taskElementback.textContent = 'Monday';
-				           taskElementback.style.color = '#334D33';
-				           taskElementback.style.border = "none";
-			    } else if ((totalTime >= 140 || totalTime < 20) && j === 4 && i === 5) {
-				           taskElementback.textContent = getText();
-				           taskElementback.style.color = '#334D33';
-				           taskElementback.style.border = "none";
-				           taskElementback.style.background = "#0A1A0A";
-				           taskElementback.style.width = getWidth() + '%';
-			    } else if ((totalTime >= 92 && totalTime < 140) && j === 3 && i === 5) {
-			                   taskElementback.textContent = getText();
-				           taskElementback.style.color = '#334D33';
-				           taskElementback.style.border = "none";
-				           taskElementback.style.background = "#0A1A0A";
-				           taskElementback.style.width = getWidth() + '%';
-			    } else if ((totalTime >= 44 && totalTime < 92) && j === 2 && i === 5) {
-			                   taskElementback.textContent = getText();
-				           taskElementback.style.color = '#334D33';
-				           taskElementback.style.border = "none";
-				           taskElementback.style.background = "#0A1A0A";
-				           taskElementback.style.width = getWidth() + '%';
-			    } else if ((totalTime >= 20 && totalTime < 44) && j === 1 && i === 5) {
-			                   taskElementback.textContent = getText();
-				           taskElementback.style.color = '#334D33';
-				           taskElementback.style.border = "none";
-				           taskElementback.style.background = "#0A1A0A";
-				           taskElementback.style.width = getWidth() + '%';
-			    } else if (j === 5) {
-			                   taskElementback.textContent = getText();
-				           taskElementback.style.border = "none";
-				           taskElementback.style.color = "#334D33";
-				           taskElementback.style.border = "none";
-				           taskElementback.style.background = "#0A1A0A";
-				           taskElementback.style.width = getWidth() + '%';
-			    } else {
-                                 taskElementback.style.border = "2px solid #00ff00";
-			         taskElementback.style.color = "#00ff00";
-		                 taskElementback.style.filter = "blur(10px)";
-			    }
-		      }
-                 }  
-                inputs.forEach(input => {
-		    input.style.border = "1px solid #00ff00";
-		    input.style.color = "#00ff00";
-		 });
-
-		 // Apply styles to all buttons
-		 buttons.forEach(button => {
-		    button.style.background = "#00ff00";
-		 });
-            }
-        }
-    }
-    if (currentTime >= 23 || currentTime < 5) { 
-                   editDot.style.color = "#334D33";
-                   for (let j = 1; j <= 5; j++) {
-                            const taskElementdack = document.getElementById(`task${j}`);
-                            if ((totalTime >= 140 || totalTime < 20) && j === 1) {
-				           taskElementdack.textContent = 'Saturday-Sunday';
-				           taskElementdack.style.color = '#334D33';
-				           taskElementdack.style.border = "none";
-			    } else if ((totalTime >= 92 && totalTime < 140) && j === 4) {
-			                   taskElementdack.textContent = 'Thursday-Friday';
-				           taskElementdack.style.color = '#334D33';
-				           taskElementdack.style.border = "none";
-			    } else if ((totalTime >= 44 && totalTime < 92) && j === 3) {
-			                   taskElementdack.textContent = 'Tuesday-Wednesday';
-				           taskElementdack.style.color = '#334D33';
-				           taskElementdack.style.border = "none";
-			    } else if ((totalTime >= 20 && totalTime < 44) && j === 2) {
-			                   taskElementdack.textContent = 'Monday';
-				           taskElementdack.style.color = '#334D33';
-				           taskElementdack.style.border = "none";
-			    } else if ((totalTime >= 140 || totalTime < 20) && j === 4) {
-				           taskElementdack.textContent = getText();
-				           taskElementdack.style.color = '#334D33';
-				           taskElementback.style.border = "none";
-				           taskElementdack.style.background = "#0A1A0A";
-				           taskElementdack.style.width = getWidth() + '%';
-			    } else if ((totalTime >= 92 && totalTime < 140) && j === 3) {
-			                   taskElementdack.textContent = getText();
-				           taskElementdack.style.color = '#334D33';
-				           taskElementback.style.border = "none";
-				           taskElementdack.style.background = "#0A1A0A";
-				           taskElementdack.style.width = getWidth() + '%';
-			    } else if ((totalTime >= 44 && totalTime < 92) && j === 2) {
-			                   taskElementdack.textContent = getText();
-				           taskElementdack.style.color = '#334D33';
-				           taskElementback.style.border = "none";
-				           taskElementdack.style.background = "#0A1A0A";
-				           taskElementdack.style.width = getWidth() + '%';
-			    } else if ((totalTime >= 20 && totalTime < 44) && j === 1) {
-			                   taskElementdack.textContent = getText();
-				           taskElementdack.style.color = '#334D33';
-				           taskElementdack.style.border = "none";
-				           taskElementdack.style.background = "#0A1A0A";
-				           taskElementdack.style.width = getWidth() + '%';
-			    } else {
-                                 taskElementdack.style.border = "2px solid #00ff00";
-			         taskElementdack.style.color = "#00ff00";
-		                 taskElementdack.style.filter = "blur(10px)";
-			    }
-		}
-		const inputss = document.querySelectorAll('.task-edit-popup input');
-                const buttonss = document.querySelectorAll('.task-edit-popup button');
-		inputss.forEach(input => {
-		    input.style.border = "1px solid #00ff00";
-		    input.style.color = "#00ff00";
-		 });
-
-		 // Apply styles to all buttons
-		 buttonss.forEach(button => {
-		    button.style.background = "#00ff00";
-		 });
-          }
-}
 function getWidth() {
   const now = new Date();
-  const currentHour = now.getHours();
-  const currentDay = now.getDay();
-  const currentMinute = now.getMinutes();
-  const totalTime = currentDay*24 + currentHour;
-  let currentTime = totalTime * 60 + currentMinute;
-  let startTime, endTime;
-
-  if (totalTime >= 140 || totalTime < 20) {
-      endTime = 11280;
-      startTime = 8400;
-      if (currentDay === 0) {
-          currentTime += 10080;
-      }
-  } else if (totalTime >= 20 && totalTime < 44) {
-      endTime = 44 * 60;
-      startTime = 20 * 60;
-  } else if (totalTime >= 44 && totalTime < 92) {
-      endTime = 92 * 60;
-      startTime = 44 * 60;
-  } else if (totalTime >= 92 && totalTime < 140) {
-      endTime = 11280;
-      startTime = 92 * 60;
-  }
-  const remainingTime = endTime - currentTime;
-  const totalDur = endTime - startTime;
-  const percentageRemaining = Math.floor((remainingTime / totalDur) * 100);
-  if (percentageRemaining > 0 && percentageRemaining < 100) {
-         return percentageRemaining;
-  } else {
-         return 100;
-  }
+  let currentTime = (now.getDay() || 7) * 24 * 60 + now.getHours() * 60 + now.getMinutes();
+  let [startTime, endTime] = 
+    currentTime >= 20 * 60 && currentTime < 44 * 60 ? [20 * 60, 44 * 60] :
+    currentTime >= 44 * 60 && currentTime < 92 * 60 ? [44 * 60, 92 * 60] :
+    currentTime >= 92 * 60 && currentTime < 140 * 60 ? [92 * 60, 140 * 60] :
+    [140 * 60, 168 * 60]; 
+  return Math.floor(((endTime - currentTime) / (endTime - startTime)) * 100);
 }
 function getText() {
   const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-  const currentTimeInMinutes = currentHour * 60 + currentMinute;
-
-  let endTime;
-  let day;
-  const dayOfWeek = new Date().getDay();
-  if (dayOfWeek == 0) {
-      day = "Sunday";
-  } else if (dayOfWeek == 1) {
-      day = "Monday";
-  } else if (dayOfWeek == 2) {
-      day = "Tuesday";
-  } else if (dayOfWeek == 3) {
-      day = "Wednesday";
-  } else if (dayOfWeek == 4) {
-      day = "Thursday";
-  } else if (dayOfWeek == 5) {
-      day = "Friday";
-  } else if (dayOfWeek == 6) {
-      day = "Saturday";
-  }
-  if (currentTimeInMinutes >= 5 * 60 && currentTimeInMinutes < 14 * 60) {
-    // Between 5 AM and 2 PM
-    endTime = "5am-2pm";   // 2 PM
-  } else if (currentTimeInMinutes >= 16 * 60 && currentTimeInMinutes < 20 * 60) {
-    // Between 4 PM and 8 PM
-    endTime = "4pm-8pm";   // 2 PM
-  } else if (currentTimeInMinutes >= 23 * 60 || currentTimeInMinutes < 5 * 60) {
-    // Between 11 PM and 5 AM
-    endTime = "11pm-5am";   // 2 PM
-  } else if (currentTimeInMinutes >= 14 * 60 && currentTimeInMinutes < 16 * 60) {
-    // Between 4 PM and 8 PM
-    endTime = "2pm-4pm";   // 2 PM
-  } else if (currentTimeInMinutes >= 20 * 60 && currentTimeInMinutes < 23 * 60) {
-    // Between 11 PM and 5 AM
-    endTime = "8pm-11pm";   // 2 PM
-  } else {
-    return null;  // Time is outside specified ranges
-  }
-  finalTime = day + '(' + endTime + ')';
-  return finalTime;
+  const currentTime = now.getHours();
+  const day = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][now.getDay()];
+  const endTime = 
+    currentTime >= 5  && currentTime < 14 ? "5am-2pm" :
+    currentTime >= 14 && currentTime < 16 ? "2pm-4pm" :
+    currentTime >= 16 && currentTime < 20 ? "4pm-8pm" :
+    currentTime >= 20 && currentTime < 23 ? "8pm-11pm" :
+    "11pm-5am";
+  return endTime ? `${day} (${endTime})` : `null`;
 }
-// Load the tasks and adjust font size on page load
-window.onload = loadTasks;
-
+window.onload = updatePunishmentState;
     </script>
 </body>
 </html>
