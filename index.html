@@ -10,7 +10,6 @@
             margin: 0;
             padding: 0;
         }
-
         body {
             margin: 0;
             font-family: 'Courier New', Courier, monospace;
@@ -24,7 +23,6 @@
             height: 100vh;
             width: 100vw;
         }
-
         .container {
             width: 100%;
             height: calc(100% - 50px); /* Reserve space for the edit button */
@@ -34,7 +32,6 @@
             align-items: center;
             padding: 10px;
         }
-
         .tasks {
             display: flex;
             flex-direction: column;
@@ -42,7 +39,6 @@
             width: 100%;
             height: 100%;
         }
-
         .task {
             display: flex;
             align-items: center;
@@ -57,11 +53,6 @@
             white-space: normal; /* Allow wrapping */
             word-wrap: break-word; /* Ensure words break when necessary */
         }
-
-        .task.completed {
-            color: #666;
-        }
-
         .edit-dot {
             position: fixed;
             top: 20px;
@@ -70,12 +61,10 @@
             color: #334D33;
             z-index: 100;
         }
-
         .edit-dot svg {
             width: 30px;
             height: 30px;
         }
-
         .task-edit-popup {
             display: none;
             position: fixed; /* Change from absolute to fixed */
@@ -86,7 +75,6 @@
             background: rgba(0, 0, 0, 0.8);
             z-index: 200;
         }
-
         .task-edit-popup input {
             text-align: center;
             font-family: 'Courier New', Courier, monospace;
@@ -97,7 +85,6 @@
             width: 100%;
             height: 15%;
         }
-
         .task-edit-popup button {
             font-family: 'Courier New', Courier, monospace;
             font-size: 5vh;
@@ -113,31 +100,19 @@
 <body>
     <div class="container">
         <div class="tasks">
-            <div id="task1" class="task" onclick="toggleTaskCompletion('task1')">
-                Whiterose: The Mastermind Initiation
-            </div>
-            <div id="task2" class="task" onclick="toggleTaskCompletion('task2')">
-                The Whiterose Malware Cartel
-            </div>
-            <div id="task3" class="task" onclick="toggleTaskCompletion('task3')">
-                Instant Malware Cashflow
-            </div>
-            <div id="task4" class="task" onclick="toggleTaskCompletion('task4')">
-                Weekend Malware: Chaos & Destructive Mode
-            </div>
-            <div id="task5" class="task" onclick="toggleTaskCompletion('task5')">
-                Sex: Whiterose's Seductive Lure
-            </div>
+            <div id="task1" class="task" onclick="toggleTaskCompletion('task1')"></div>
+            <div id="task2" class="task" onclick="toggleTaskCompletion('task2')"></div>
+            <div id="task3" class="task" onclick="toggleTaskCompletion('task3')"></div>
+            <div id="task4" class="task" onclick="toggleTaskCompletion('task4')"></div>
+            <div id="task5" class="task" onclick="toggleTaskCompletion('task5')"></div>
         </div>
     </div>
-
     <div class="edit-dot" onclick="showTaskEditPopup()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 20h9"></path>
             <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
         </svg>
     </div>
-
     <div class="task-edit-popup" id="taskEditPopup">
         <input type="text" id="editTask1" placeholder="Whiterose: The Mastermind Initiation">
         <input type="text" id="editTask2" placeholder="The Whiterose Malware Cartel">
@@ -146,7 +121,6 @@
         <input type="text" id="editTask5" placeholder="Sex: Whiterose's Seductive Lure">
         <button onclick="saveTasks()">Save</button>
     </div>
-
     <script>
 function updatePunishmentState() {
     const currentTime = new Date().getHours();
@@ -156,11 +130,9 @@ function updatePunishmentState() {
     const buttons = document.querySelectorAll('.task-edit-popup button');
     let dimColorSet = "#334D33";
     let colorSet = "#00ff00";
-    let backgroundSet = "#0A1A0A";
     if (localStorage.getItem(`task${editableTasks()}-punishment`) === 'punishment') {
               dimColorSet = "#5A0000";
 	            colorSet = "#ff0000";
-	            backgroundSet = "#1A0000";
     }
     editDot.style.color = dimColorSet;
     inputs.forEach(input => {
@@ -209,12 +181,19 @@ function updatePunishmentState() {
           taskElement.style.color = dimColorSet;
           taskElement.style.border = "none";
           if ((((totalTime >= 140 || totalTime < 20) && i === 4) || ((totalTime >= 92 && totalTime < 140) && i === 3) || ((totalTime >= 44 && totalTime < 92) && i === 2) || ((totalTime >= 20 && totalTime < 44) && i === 1) || ((currentTime < 23 && currentTime >= 5) && i === 5)) && taskElement.style.pointerEvents === 'none') {
-						taskElement.textContent = getText();
-						taskElement.style.background = backgroundSet;
-						taskElement.style.width = getWidth() + '%';
+						taskElement.textContent = 
+										currentTime >= 5  && currentTime < 14 ? "5am-2pm" :
+										currentTime >= 14 && currentTime < 16 ? "2pm-4pm" :
+										currentTime >= 16 && currentTime < 20 ? "4pm-8pm" :
+										currentTime >= 20 && currentTime < 23 ? "8pm-11pm" :
+										"11pm-5am";
 					} else if (((totalTime >= 140 || totalTime < 20) && i === 1) || ((totalTime >= 92 && totalTime < 140) && i === 4) || ((totalTime >= 44 && totalTime < 92) && i === 3) || ((totalTime >= 20 && totalTime < 44) && i === 2)) {
 					 taskElement.textContent = daySet;
 					} else {
+					       if (punishmentSet === 'punishment') {
+					             contentSet = 'Hack & Burn';
+                       showContent = 'Kernel Crash Operation';
+					       }
 					       taskElement.textContent = contentSet;
 					       taskElement.style.border = `2px solid ${colorSet}`;
 								 if (taskElement.style.pointerEvents === 'none') {
@@ -255,42 +234,14 @@ function editableTasks() {
   return (now.getHours() >= 14 && now.getHours() < 16) || (now.getHours() >= 20 && now.getHours() < 23) ? 5 : (now.getHours() >= 23 || now.getHours() < 5) ? 0 : (now.getDay() === 0 || now.getDay() === 6) ? 4 : (now.getDay() === 1) ? 1 : (now.getDay() === 2 || now.getDay() === 3) ? 2 : (now.getDay() === 4 || now.getDay() === 5) ? 3 : 0;
 }
 function adjustFontSize() {
-    const tasks = document.querySelectorAll('.task');
-    tasks.forEach(task => {
+    document.querySelectorAll('.task').forEach(task => {
         let fontSize = 1;
-        task.style.fontSize = `${fontSize}px`;
-        task.style.lineHeight = 'normal';
-        while (
-            task.scrollWidth <= task.clientWidth &&
-            task.scrollHeight <= task.clientHeight
-        ) {
-            fontSize++;
-            task.style.fontSize = `${fontSize}px`;
+        while (task.scrollWidth <= task.clientWidth && task.scrollHeight <= task.clientHeight) {
+            task.style.fontSize = `${++fontSize}px`;
         }
         task.style.fontSize = `${fontSize - 1}px`;
+        task.style.lineHeight = 'normal';
     });
-}
-function getWidth() {
-  const now = new Date();
-  let currentTime = (now.getDay() || 7) * 24 * 60 + now.getHours() * 60 + now.getMinutes();
-  let [startTime, endTime] = 
-    currentTime >= 20 * 60 && currentTime < 44 * 60 ? [20 * 60, 44 * 60] :
-    currentTime >= 44 * 60 && currentTime < 92 * 60 ? [44 * 60, 92 * 60] :
-    currentTime >= 92 * 60 && currentTime < 140 * 60 ? [92 * 60, 140 * 60] :
-    [140 * 60, 168 * 60]; 
-  return Math.floor(((endTime - currentTime) / (endTime - startTime)) * 100);
-}
-function getText() {
-  const now = new Date();
-  const currentTime = now.getHours();
-  const day = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][now.getDay()];
-  const endTime = 
-    currentTime >= 5  && currentTime < 14 ? "5am-2pm" :
-    currentTime >= 14 && currentTime < 16 ? "2pm-4pm" :
-    currentTime >= 16 && currentTime < 20 ? "4pm-8pm" :
-    currentTime >= 20 && currentTime < 23 ? "8pm-11pm" :
-    "11pm-5am";
-  return endTime ? `${day} (${endTime})` : `null`;
 }
 window.onload = updatePunishmentState;
     </script>
