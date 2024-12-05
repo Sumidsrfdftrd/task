@@ -124,7 +124,8 @@
     <script>
 function updatePunishmentState() {
     const currentTime = new Date().getHours();
-    const totalTime = new Date().getDay() * 24 + currentTime;
+    const dayOfWeek = new Date().getDay();
+    const totalTime = dayOfWeek * 24 + currentTime;
     const editDot = document.querySelector('.edit-dot');
     const inputs = document.querySelectorAll('.task-edit-popup input');
     const buttons = document.querySelectorAll('.task-edit-popup button');
@@ -170,7 +171,7 @@ function updatePunishmentState() {
           if (taskStatus === null) {
                    localStorage.setItem(`task${i}`, 'completed');
                    taskStatus = 'completed';
-          } else if (punishment === 'punishment' || ((((totalTime < 140 || totalTime >= 20) && i === 4) || ((totalTime < 92 || totalTime >= 140) && i === 3) || ((totalTime < 44 || totalTime >= 92) && i === 2) || ((totalTime < 20 || totalTime >= 44) && i === 1)) && taskStatus !== 'completed')) {
+          } else if (punishment === 'punishment' || ((((totalTime < 140 || totalTime >= 20) && i === 4) || ((totalTime < 92 || totalTime >= 140) && i === 3) || ((totalTime < 44 || totalTime >= 92) && i === 2) || ((totalTime < 20 || totalTime >= 44) && i === 1) || ((dayOfWeek === 1 && currentTime < 14) && i === 5)) && taskStatus !== 'completed')) {
                     contentSet = 'Kernel Crash Operation';
                     punishmentSet = 'punishment';
           } else if (((totalTime >= 140 || totalTime < 20) && i === 4) || ((totalTime >= 92 && totalTime < 140) && i === 3) || ((totalTime >= 44 && totalTime < 92) && i === 2) || ((totalTime >= 20 && totalTime < 44) && i === 1) || i === 5) {
@@ -205,12 +206,12 @@ function updatePunishmentState() {
 					       }
 					}           
     }
-    adjustFontSize();
+    requestAnimationFrame(() => {
+            adjustFontSize();
+        });
 }
 function toggleTaskCompletion(taskId) {
-    const taskIndex = taskId.replace('task', '') - 1;
-    const taskStatus = localStorage.getItem(`task${taskIndex + 1}`);
-    localStorage.setItem(`task${taskIndex + 1}`, (taskStatus !== 'completed') ? 'completed' : 'pending');
+    localStorage.setItem(`${taskId}`, (localStorage.getItem(`${taskId}`) !== 'completed') ? 'completed' : 'pending');
     updatePunishmentState();
 }
 function showTaskEditPopup() {
@@ -242,6 +243,9 @@ function adjustFontSize() {
         task.style.fontSize = `${fontSize - 1}px`;
         task.style.lineHeight = 'normal';
     });
+}
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
 }
 window.onload = updatePunishmentState;
     </script>
